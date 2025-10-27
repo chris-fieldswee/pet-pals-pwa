@@ -151,20 +151,20 @@ const StandardWalkScreen = ({ onStart, onMusicClick }: { onStart: () => void; on
         </div>
       </div>
 
-      {/* Bottom Controls */}
-      <div className="bg-white border-t border-slate-200 px-6 py-6">
-        <div className="flex items-center justify-between max-w-md mx-auto gap-4">
+      {/* Bottom Controls - Centered Vertically */}
+      <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-6">
+        <div className="flex items-center justify-center gap-4 max-w-md mx-auto">
           {/* Settings Button */}
           <button className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
             <Settings className="w-6 h-6 text-slate-600" />
           </button>
 
-          {/* START Button */}
+          {/* START Button - Large Circle */}
           <button
             onClick={onStart}
-            className="flex-1 h-16 bg-primary rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all"
+            className="w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
-            <span className="text-white font-bold text-lg">START</span>
+            <Play className="w-8 h-8 text-white fill-white" />
           </button>
 
           {/* Music Button */}
