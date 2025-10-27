@@ -85,15 +85,10 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
 
           {/* Sidebar Content */}
           <div 
-            className={`
-              absolute left-0 top-0 bottom-0 w-[320px]
-              bg-white 
-              shadow-2xl
-              transform transition-transform duration-300 ease-in-out
-              ${open ? "translate-x-0" : "-translate-x-full"}
-              flex flex-col
-              z-50
-            `}
+            className="absolute left-0 top-0 bottom-0 w-[320px] h-full bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col z-50"
+            style={{
+              transform: open ? 'translateX(0)' : 'translateX(-100%)'
+            }}
           >
             {/* Header */}
             <div className="flex-shrink-0 p-6 border-b border-slate-200 flex items-center justify-between">
