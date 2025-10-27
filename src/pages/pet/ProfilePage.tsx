@@ -119,7 +119,7 @@ const ProfilePage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="sticky top-0 z-50 bg-white border-b border-slate-200">
         <div className="px-6 py-4">
           <Button
             variant="ghost"
