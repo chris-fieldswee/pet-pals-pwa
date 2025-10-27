@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Stop, Pause, Play, Flag, MapPin, Timer } from "lucide-react";
+import { Square, Pause, Play, Flag, MapPin, Timer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -210,7 +210,7 @@ const ActiveWalk = () => {
             onClick={handleFinish}
             className="w-full h-14 bg-primary hover:bg-primary/90 text-white"
           >
-            <Stop className="w-5 h-5 mr-2" />
+            <Square className="w-5 h-5 mr-2" />
             Finish Walk
           </Button>
         </div>
