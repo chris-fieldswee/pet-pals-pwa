@@ -14,7 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pets: {
+        Row: {
+          birth_date: string
+          breed: string | null
+          created_at: string
+          id: string
+          name: string
+          photo_url: string | null
+          type: Database["public"]["Enums"]["pet_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date: string
+          breed?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          photo_url?: string | null
+          type: Database["public"]["Enums"]["pet_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string
+          breed?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          photo_url?: string | null
+          type?: Database["public"]["Enums"]["pet_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email_marketing_opt_in: boolean | null
+          first_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email_marketing_opt_in?: boolean | null
+          first_name: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email_marketing_opt_in?: boolean | null
+          first_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +90,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      pet_type: "dog" | "cat"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +217,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      pet_type: ["dog", "cat"],
+    },
   },
 } as const
