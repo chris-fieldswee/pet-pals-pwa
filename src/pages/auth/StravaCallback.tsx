@@ -40,7 +40,13 @@ const StravaCallback = () => {
   useEffect(() => {
     if (checkingSession) return;
     console.log("StravaCallback mounted", { code, error, user });
-    handleCallback();
+    
+    // Prevent duplicate calls
+    const timer = setTimeout(() => {
+      handleCallback();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [code, error, checkingSession]);
 
   const handleCallback = async () => {
@@ -108,8 +114,8 @@ const StravaCallback = () => {
       console.log("Strava response:", { ok: response.ok, status: response.status, data });
 
       if (!response.ok) {
-        console.error("Strava error details:", data);
-        throw new Error(data.message || data.error || "Failed to exchange token");
+        console.error("Strava error details:", JSON.stringify(data, null, 2));
+        throw new Error(data.message || data.error || JSON.stringify(data.errors) || "Failed to exchange token");
       }
 
       // Store the integration in the database
