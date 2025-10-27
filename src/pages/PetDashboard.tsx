@@ -224,69 +224,60 @@ const PetDashboard = () => {
           </Button>
         </div>
 
-        {/* Activities Section */}
-        <div>
-
-        {/* Recent Activities */}
-        {activities.length > 0 ? (
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-slate-900">Recent Activities</h2>
-            {activities.map((activity) => (
-              <div key={activity.id} className="bg-white rounded-2xl p-4 border border-slate-200">
-                <div className="flex items-start gap-3">
-                  {activity.media_url && activity.media_type === 'image' && (
-                    <img
-                      src={activity.media_url}
-                      alt={activity.title}
-                      className="w-16 h-16 rounded-xl object-cover"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold text-primary uppercase">
-                        {activity.activity_type}
+        {/* Recent Activities Preview */}
+        {activities.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-slate-900">Recent Activity</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/activities")}
+              >
+                View all
+              </Button>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200">
+              <div className="flex items-start gap-3">
+                {activities[0].media_url && activities[0].media_type === 'image' && (
+                  <img
+                    src={activities[0].media_url}
+                    alt={activities[0].title}
+                    className="w-16 h-16 rounded-xl object-cover"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-semibold text-primary uppercase">
+                      {activities[0].activity_type}
+                    </span>
+                    {activities[0].duration_minutes && (
+                      <span className="text-xs text-slate-500">
+                        {activities[0].duration_minutes} min
                       </span>
-                      {activity.duration_minutes && (
-                        <span className="text-xs text-slate-500">
-                          {activity.duration_minutes} min
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-semibold text-slate-900 mb-1">
-                      {activity.title}
-                    </h3>
-                    {activity.description && (
-                      <p className="text-sm text-slate-600 line-clamp-2">
-                        {activity.description}
-                      </p>
                     )}
-                    {activity.location_name && (
-                      <p className="text-xs text-slate-500 mt-2">
-                        📍 {activity.location_name}
-                      </p>
-                    )}
-                    <p className="text-xs text-slate-400 mt-2">
-                      {new Date(activity.created_at).toLocaleDateString()}
-                    </p>
                   </div>
+                  <h3 className="font-semibold text-slate-900 mb-1 truncate">
+                    {activities[0].title}
+                  </h3>
+                  {activities[0].description && (
+                    <p className="text-sm text-slate-600 line-clamp-2">
+                      {activities[0].description}
+                    </p>
+                  )}
+                  {activities[0].location_name && (
+                    <p className="text-xs text-slate-500 mt-2">
+                      📍 {activities[0].location_name}
+                    </p>
+                  )}
+                  <p className="text-xs text-slate-400 mt-2">
+                    {new Date(activities[0].created_at).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl p-6 border-2 border-dashed border-slate-200">
-            <div className="text-center">
-              <Activity className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                No activities yet
-              </h3>
-              <p className="text-sm text-slate-600">
-                Tap the + button below to start tracking activities
-              </p>
             </div>
           </div>
         )}
-      </div>
 
       {/* Fixed Bottom Navigation */}
       <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-3 z-50">
