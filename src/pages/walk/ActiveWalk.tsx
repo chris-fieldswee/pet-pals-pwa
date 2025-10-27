@@ -73,7 +73,7 @@ const ActiveWalk = () => {
           activity_type: "walk",
           title: `Walk with ${pet.name}`,
           description: `Walked ${mockDistance.toFixed(1)} km in ${formatTime(elapsedTime)}`,
-          distance_km: mockDistance,
+          distance_miles: mockDistance * 0.621371, // Convert km to miles
           duration_minutes: Math.floor(elapsedTime / 60),
           created_at: startTime.toISOString(),
         })
