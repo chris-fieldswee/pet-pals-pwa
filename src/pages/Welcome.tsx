@@ -20,7 +20,7 @@ const Welcome = () => {
       </div>
 
       {/* Hero Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-4">
         <div className="mb-8 flex gap-4 animate-fade-in">
           <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-md">
             <Dog className="w-12 h-12 text-slate-700" />
@@ -39,7 +39,7 @@ const Welcome = () => {
       </div>
 
       {/* CTA Buttons - Thumb-friendly at bottom */}
-      <div className="px-6 pb-6 space-y-3">
+      <div className="px-6 pb-safe-offset-4 space-y-3">
         <Button
           onClick={() => navigate("/onboarding/email")}
           className="w-full h-14 text-base font-semibold rounded-2xl shadow-md"
