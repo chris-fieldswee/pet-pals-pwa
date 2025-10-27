@@ -278,6 +278,7 @@ const PetDashboard = () => {
             </div>
           </div>
         )}
+      </div>
 
       {/* Fixed Bottom Navigation */}
       <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-3 z-50">
@@ -383,6 +384,7 @@ const PetDashboard = () => {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };
