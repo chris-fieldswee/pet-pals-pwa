@@ -187,14 +187,18 @@ const ProfilePage = () => {
                 onClick={() => setActiveSection(section.id)}
                 className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg transition-all ${
                   activeSection === section.id
-                    ? "bg-primary/10 text-primary border-2 border-primary"
-                    : "bg-slate-50 text-slate-500 border-2 border-transparent hover:bg-slate-100"
+                    ? "bg-primary/10"
+                    : "bg-slate-50 hover:bg-slate-100"
                 }`}
               >
-                <div className={`p-2 rounded-lg ${activeSection === section.id ? section.color : "bg-slate-200"}`}>
-                  <Icon className={`w-5 h-5 ${activeSection === section.id ? "" : "text-slate-600"}`} />
+                <div className={`p-2 rounded-lg ${section.color}`}>
+                  <Icon className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-medium">{section.title}</span>
+                <span className={`text-xs font-medium ${
+                  activeSection === section.id ? "text-primary" : "text-slate-600"
+                }`}>
+                  {section.title}
+                </span>
               </button>
             );
           })}
@@ -202,8 +206,8 @@ const ProfilePage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-6 pt-6">
-        <div className="max-w-2xl mx-auto px-6 space-y-4">
+      <div className="flex-1 overflow-y-auto bg-white">
+        <div className="max-w-2xl mx-auto px-6 py-6 space-y-6">
           {activeSection === "basic" && (
             <BasicInfoSection 
               pet={currentPet}
@@ -244,8 +248,8 @@ const ProfilePage = () => {
 // Basic Info Section Component
 const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
   return (
-    <div className="space-y-4">
-      <Card className="p-6">
+    <div className="space-y-6">
+      <div>
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Basic Information</h2>
         <div className="space-y-4">
           <div>
@@ -351,7 +355,7 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
             )}
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
@@ -359,8 +363,8 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
 // Activity & Lifestyle Section Component
 const ActivityLifestyleSection = ({ pet, isEditMode, onInputChange }: any) => {
   return (
-    <div className="space-y-4">
-      <Card className="p-6">
+    <div className="space-y-6">
+      <div>
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Activity & Lifestyle</h2>
         <div className="space-y-4">
           <div>
@@ -408,7 +412,7 @@ const ActivityLifestyleSection = ({ pet, isEditMode, onInputChange }: any) => {
             )}
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
@@ -416,8 +420,8 @@ const ActivityLifestyleSection = ({ pet, isEditMode, onInputChange }: any) => {
 // Health & Wellness Section Component
 const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
   return (
-    <div className="space-y-4">
-      <Card className="p-6">
+    <div className="space-y-6">
+      <div>
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Health & Wellness</h2>
         <div className="space-y-4">
           <div>
@@ -500,7 +504,7 @@ const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
             )}
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
@@ -508,8 +512,8 @@ const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
 // Care Team Section Component
 const CareTeamSection = ({ pet, isEditMode, onInputChange }: any) => {
   return (
-    <div className="space-y-4">
-      <Card className="p-6">
+    <div className="space-y-6">
+      <div>
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Care Team & Support</h2>
         <div className="space-y-4">
           <div>
@@ -566,7 +570,7 @@ const CareTeamSection = ({ pet, isEditMode, onInputChange }: any) => {
             )}
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
