@@ -154,7 +154,7 @@ const StandardWalkScreen = ({ onStart, onMusicClick }: { onStart: () => void; on
       </div>
 
       {/* Bottom Controls - Fixed at Bottom */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-6 z-50">
+      <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-6 z-50">
         <div className="flex items-center justify-center gap-4 max-w-md mx-auto">
           {/* Settings Button */}
           <button className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
