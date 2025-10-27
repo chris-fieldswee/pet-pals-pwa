@@ -385,7 +385,6 @@ const PetDashboard = () => {
         </div>
       </div>
     </div>
-    </div>
   );
 };
 
