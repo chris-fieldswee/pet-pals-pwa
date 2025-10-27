@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Settings, Music, Play } from "lucide-react";
+import { ArrowLeft, Settings, Music, Play, Download, Clock } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerTrigger } from "@/components/ui/drawer";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * Walk Page - Main walk activity page
@@ -184,14 +186,135 @@ const StandardWalkScreen = ({ onStart, onMusicClick }: { onStart: () => void; on
  * Guided Walks Screen - Library of guided walks
  */
 const GuidedWalksScreen = () => {
+  const { petId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [guidedWalks, setGuidedWalks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchGuidedWalks();
+  }, []);
+
+  const fetchGuidedWalks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("guided_walks")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+
+      // Group by category
+      const grouped = data?.reduce((acc: any, walk: any) => {
+        if (!acc[walk.category]) {
+          acc[walk.category] = {
+            category: walk.category,
+            subtitle: getCategorySubtitle(walk.category),
+            walks: []
+          };
+        }
+        acc[walk.category].walks.push(walk);
+        return acc;
+      }, {});
+
+      setGuidedWalks(Object.values(grouped || {}));
+    } catch (error: any) {
+      console.error("Error fetching guided walks:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCategorySubtitle = (category: string) => {
+    const subtitles: Record<string, string> = {
+      "Get Started": "Practical tips for you and your new friend",
+      "Leash Training": "Guided tips to stop pulling and start enjoying",
+      "Energy Burners": "Intervals and activities for high-energy pets"
+    };
+    return subtitles[category] || "";
+  };
+
+  const handleWalkClick = (walkId: string) => {
+    navigate(`/pet/${petId}/guided-walk/${walkId}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-slate-600">Loading guided walks...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex-1 p-6">
-      <div className="max-w-md mx-auto">
-        <p className="text-slate-600 text-center py-12">
-          Browse guided walks library
-          <br />
-          <span className="text-sm text-slate-500">Coming soon</span>
-        </p>
+    <div className="flex-1 overflow-y-auto pb-6">
+      <div className="max-w-md mx-auto px-6 space-y-8 py-6">
+        {/* My Walks Section */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-slate-900">My Walks</h2>
+          
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white rounded-2xl p-4 border border-slate-200">
+              <h3 className="text-xs font-semibold text-slate-900 mb-1">Saved</h3>
+              <p className="text-2xl font-bold text-primary">0</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200">
+              <h3 className="text-xs font-semibold text-slate-900 mb-1">Completed</h3>
+              <p className="text-2xl font-bold text-primary">0</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200">
+              <h3 className="text-xs font-semibold text-slate-900 mb-1">Downloaded</h3>
+              <p className="text-2xl font-bold text-primary">0</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Guided Walk Collections */}
+        {guidedWalks.map((category: any) => (
+          <div key={category.category} className="space-y-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">{category.category}</h3>
+              <p className="text-sm text-slate-600">{category.subtitle}</p>
+            </div>
+            
+            <div className="space-y-3">
+              {category.walks.map((walk: any) => (
+                <div
+                  key={walk.id}
+                  onClick={() => handleWalkClick(walk.id)}
+                  className="bg-white rounded-2xl overflow-hidden border border-slate-200 cursor-pointer hover:shadow-lg transition-shadow"
+                >
+                  <div 
+                    className="h-32 relative bg-slate-200"
+                    style={{
+                      backgroundImage: `url(${walk.hero_image_url})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h4 className="text-white font-bold text-lg">{walk.title}</h4>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-center gap-4 text-sm text-slate-600">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {walk.duration} Min
+                      </span>
+                      <span>•</span>
+                      <span>{walk.category}</span>
+                    </div>
+                    <p className="text-sm text-slate-700 line-clamp-2">{walk.subtitle}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
