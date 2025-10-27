@@ -4,9 +4,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { MapPin, Compass, Bell, MessageCircle, Home, Activity, Plus, Heart } from "lucide-react";
+import { MapPin, Compass, Bell, MessageCircle, Home, Activity, Plus, Heart, FileText, ShoppingCart, ActivityLog } from "lucide-react";
 import { PetSidebar } from "@/components/PetSidebar";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerDescription } from "@/components/ui/drawer";
+import { Card } from "@/components/ui/card";
 
 /**
  * Pet Dashboard - Individual pet's main view
@@ -139,8 +140,33 @@ const PetDashboard = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-6 py-6 overflow-y-auto pb-24">
-        <div className="mb-6">
+      <div className="flex-1 px-6 py-6 overflow-y-auto pb-24 space-y-6">
+        {/* Profile Completion Message */}
+        {!pet.breed && !pet.personality && (
+          <Card className="p-4 bg-amber-50 border-amber-200">
+            <div className="flex items-start gap-3">
+              <Heart className="w-5 h-5 text-amber-600 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-900 mb-1">
+                  Complete {pet.name}'s Profile
+                </h3>
+                <p className="text-sm text-amber-700 mb-3">
+                  Add more details to unlock personalized insights and features
+                </p>
+                <Button
+                  onClick={() => navigate(`/pet/${petId}/profile`)}
+                  size="sm"
+                  className="bg-amber-600 hover:bg-amber-700 text-white"
+                >
+                  Complete Profile
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Welcome Section */}
+        <div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Welcome back, {pet.name}!
           </h1>
@@ -148,6 +174,58 @@ const PetDashboard = () => {
             {pet.breed ? `${pet.breed}` : `${pet.type}`} • {new Date().getFullYear() - new Date(pet.birth_date).getFullYear()} years old
           </p>
         </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={() => navigate(`/pet/${petId}/health`)}
+            variant="outline"
+            className="h-20 flex-col gap-2 bg-white hover:bg-slate-50"
+          >
+            <ActivityLog className="w-6 h-6 text-primary" />
+            <span className="text-sm font-semibold">Health Log</span>
+          </Button>
+
+          <Button
+            onClick={() => navigate("/activities")}
+            variant="outline"
+            className="h-20 flex-col gap-2 bg-white hover:bg-slate-50"
+          >
+            <Activity className="w-6 h-6 text-primary" />
+            <span className="text-sm font-semibold">Activities</span>
+          </Button>
+
+          <Button
+            onClick={() => {
+              toast({
+                title: "Coming soon",
+                description: "Medical summary feature coming soon",
+              });
+            }}
+            variant="outline"
+            className="h-20 flex-col gap-2 bg-white hover:bg-slate-50"
+          >
+            <FileText className="w-6 h-6 text-primary" />
+            <span className="text-sm font-semibold">Medical Summary</span>
+          </Button>
+
+          <Button
+            onClick={() => {
+              toast({
+                title: "Coming soon",
+                description: "Pet products shop coming soon",
+              });
+            }}
+            variant="outline"
+            className="h-20 flex-col gap-2 bg-white hover:bg-slate-50"
+          >
+            <ShoppingCart className="w-6 h-6 text-primary" />
+            <span className="text-sm font-semibold">Buy Products</span>
+          </Button>
+        </div>
+
+        {/* Activities Section */}
+        <div>
 
         {/* Recent Activities */}
         {activities.length > 0 ? (
