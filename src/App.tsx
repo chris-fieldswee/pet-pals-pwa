@@ -23,9 +23,12 @@ import PetDashboard from "./pages/PetDashboard";
 import ProfilePage from "./pages/pet/ProfilePage";
 import HealthLog from "./pages/pet/HealthLog";
 import Notifications from "./pages/Notifications";
+import UserSettings from "./pages/UserSettings";
 import ActivitiesFeed from "./pages/ActivitiesFeed";
 import WalkPage from "./pages/walk/WalkPage";
 import GuidedWalkDetails from "./pages/walk/GuidedWalkDetails";
+import StravaCallback from "./pages/auth/StravaCallback";
+import SpotifyCallback from "./pages/auth/SpotifyCallback";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +59,9 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/activities" element={<ActivitiesFeed />} />
               <Route path="/notifications" element={<Notifications />} />
+              <Route path="/settings" element={<UserSettings />} />
+              <Route path="/auth/strava/callback" element={<StravaCallback />} />
+              <Route path="/auth/spotify/callback" element={<SpotifyCallback />} />
               <Route path="/pet/:petId" element={<PetDashboard />} />
               <Route path="/pet/:petId/profile" element={<ProfilePage />} />
               <Route path="/pet/:petId/health" element={<HealthLog />} />
