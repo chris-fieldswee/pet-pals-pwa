@@ -27,6 +27,7 @@ import UserSettings from "./pages/UserSettings";
 import ActivitiesFeed from "./pages/ActivitiesFeed";
 import WalkPage from "./pages/walk/WalkPage";
 import GuidedWalkDetails from "./pages/walk/GuidedWalkDetails";
+import ActiveWalk from "./pages/walk/ActiveWalk";
 import StravaCallback from "./pages/auth/StravaCallback";
 import SpotifyCallback from "./pages/auth/SpotifyCallback";
 import NotFound from "./pages/NotFound";
@@ -66,6 +67,7 @@ const App = () => (
               <Route path="/pet/:petId/profile" element={<ProfilePage />} />
               <Route path="/pet/:petId/health" element={<HealthLog />} />
               <Route path="/pet/:petId/walk" element={<WalkPage />} />
+              <Route path="/pet/:petId/walk/active" element={<ActiveWalk />} />
               <Route path="/pet/:petId/guided-walk/:walkId" element={<GuidedWalkDetails />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

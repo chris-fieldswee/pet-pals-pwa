@@ -62,10 +62,7 @@ const WalkPage = () => {
       <div className="flex-1">
         {activeTab === "standard" ? (
           <StandardWalkScreen 
-            onStart={() => {
-              // TODO: Navigate to active walk screen
-              alert("Walk started! (Implementation coming soon)");
-            }}
+            petId={petId || ""}
             onMusicClick={() => setIsMusicDrawerOpen(true)}
           />
         ) : (
@@ -130,7 +127,12 @@ const WalkPage = () => {
 /**
  * Standard Walk Screen - Map view with controls
  */
-const StandardWalkScreen = ({ onStart, onMusicClick }: { onStart: () => void; onMusicClick: () => void }) => {
+const StandardWalkScreen = ({ petId, onMusicClick }: { petId: string; onMusicClick: () => void }) => {
+  const navigate = useNavigate();
+  
+  const handleStart = () => {
+    navigate(`/pet/${petId}/walk/active`);
+  };
   return (
     <div className="flex flex-col h-full relative pb-28">
       {/* Map Placeholder */}
@@ -163,7 +165,7 @@ const StandardWalkScreen = ({ onStart, onMusicClick }: { onStart: () => void; on
 
           {/* START Button - Large Circle */}
           <button
-            onClick={onStart}
+            onClick={handleStart}
             className="w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
             <Play className="w-8 h-8 text-white fill-white" />
