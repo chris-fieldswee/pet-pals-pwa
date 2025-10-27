@@ -158,7 +158,7 @@ const ActiveWalk = () => {
                 {distance.toFixed(2)} km
               </p>
             </Card>
-          </Card>
+          </div>
 
           {/* Pet Info */}
           {pet && (
