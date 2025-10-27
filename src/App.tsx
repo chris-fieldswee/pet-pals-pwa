@@ -20,6 +20,7 @@ import AddPetStep3 from "./pages/onboarding/AddPetStep3";
 import PetSuccess from "./pages/onboarding/PetSuccess";
 import Dashboard from "./pages/Dashboard";
 import PetDashboard from "./pages/PetDashboard";
+import WalkPage from "./pages/walk/WalkPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/onboarding/pet-success" element={<PetSuccess />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/pet/:petId" element={<PetDashboard />} />
+              <Route path="/pet/:petId/walk" element={<WalkPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
