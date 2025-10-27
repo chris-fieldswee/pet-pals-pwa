@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,13 +12,36 @@ const StravaCallback = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const [checkingSession, setCheckingSession] = useState(true);
   const code = searchParams.get("code");
   const error = searchParams.get("error");
 
+  // Wait for session to be available
   useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log("Session check:", session?.user?.id);
+      
+      if (!session && !user) {
+        // Wait a bit more for auth to initialize
+        setTimeout(() => {
+          console.log("No session after timeout, redirecting to welcome");
+          navigate("/welcome");
+        }, 2000);
+        return;
+      }
+      
+      setCheckingSession(false);
+    };
+
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    if (checkingSession) return;
     console.log("StravaCallback mounted", { code, error, user });
     handleCallback();
-  }, [code, error]);
+  }, [code, error, checkingSession]);
 
   const handleCallback = async () => {
     console.log("handleCallback called", { error, code, user });
@@ -40,11 +63,17 @@ const StravaCallback = () => {
       return;
     }
 
-    if (!user) {
-      console.log("No user found, redirecting to welcome");
+    // Get current session if user is null
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUser = user || session?.user;
+    
+    if (!currentUser) {
+      console.log("No user found in session, redirecting to welcome");
       navigate("/welcome");
       return;
     }
+
+    console.log("Using user:", currentUser.id);
 
     try {
       // Exchange authorization code for access token
@@ -77,7 +106,7 @@ const StravaCallback = () => {
       const { error: dbError } = await supabase
         .from("user_integrations")
         .upsert({
-          user_id: user.id,
+          user_id: currentUser.id,
           service: "strava",
           access_token: data.access_token,
           refresh_token: data.refresh_token,
