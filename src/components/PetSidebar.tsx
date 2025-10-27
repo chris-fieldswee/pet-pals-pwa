@@ -85,9 +85,10 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
 
           {/* Sidebar Content */}
           <div 
-            className="absolute left-0 top-0 bottom-0 w-[320px] h-full bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col z-50"
+            className="absolute left-0 top-0 bottom-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col z-50"
             style={{
-              transform: open ? 'translateX(0)' : 'translateX(-100%)'
+              transform: open ? 'translateX(0)' : 'translateX(-100%)',
+              height: '100%'
             }}
           >
             {/* Header */}
@@ -102,7 +103,7 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
             </div>
 
             {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Pet Selector */}
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 mb-3">Switch Pet</h3>
@@ -166,7 +167,7 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
             </div>
 
             {/* User Section - Fixed at Bottom */}
-            <div className="flex-shrink-0 mt-auto p-6 border-t border-slate-200 space-y-4">
+            <div className="flex-shrink-0 p-6 border-t border-slate-200 space-y-4 bg-white">
               <div>
                 <p className="text-sm font-semibold text-slate-900">
                   {profile?.first_name || "User"}
