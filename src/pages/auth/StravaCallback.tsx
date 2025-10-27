@@ -128,6 +128,8 @@ const StravaCallback = () => {
           refresh_token: data.refresh_token,
           token_expires_at: new Date(Date.now() + data.expires_in * 1000).toISOString(),
           scope: data.scope,
+        }, {
+          onConflict: 'user_id,service'
         });
 
       if (dbError) throw dbError;
