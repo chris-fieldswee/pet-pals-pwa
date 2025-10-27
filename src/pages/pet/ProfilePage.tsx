@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Edit, Save, X, ChevronRight } from "lucide-react";
+import { ArrowLeft, Edit, Save, X, Heart, Activity, Pill, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -100,10 +100,10 @@ const ProfilePage = () => {
   };
 
   const sections = [
-    { id: "basic", title: "Basic Information", icon: "📋" },
-    { id: "activity", title: "Activity & Lifestyle", icon: "🏃" },
-    { id: "health", title: "Health & Wellness", icon: "🏥" },
-    { id: "care", title: "Care Team & Support", icon: "👥" },
+    { id: "basic", title: "Basic", icon: Heart, color: "bg-blue-100 text-blue-600" },
+    { id: "activity", title: "Activity", icon: Activity, color: "bg-green-100 text-green-600" },
+    { id: "health", title: "Health", icon: Pill, color: "bg-red-100 text-red-600" },
+    { id: "care", title: "Care Team", icon: Users, color: "bg-purple-100 text-purple-600" },
   ];
 
   if (!pet) {
@@ -114,68 +114,99 @@ const ProfilePage = () => {
     );
   }
 
+  const currentPet = isEditMode ? editedPet : pet;
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white border-b border-slate-200">
-        <div className="px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate(`/pet/${petId}`)}
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="text-xl font-bold text-slate-900">Pet Profile</h1>
+      <div className="bg-white border-b border-slate-200">
+        <div className="px-6 py-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(`/pet/${petId}`)}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+
+          {/* Pet Image */}
+          <div className="flex justify-center mb-4">
+            {currentPet?.photo_url ? (
+              <img
+                src={currentPet.photo_url}
+                alt={currentPet.name}
+                className="w-32 h-32 rounded-2xl object-cover border-4 border-white shadow-lg"
+              />
+            ) : (
+              <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center border-4 border-white shadow-lg">
+                <Heart className="w-16 h-16 text-white fill-white" />
+              </div>
+            )}
           </div>
-          
-          {!isEditMode ? (
-            <Button onClick={handleEdit} size="sm">
-              <Edit className="w-4 h-4 mr-2" />
-              Edit
-            </Button>
-          ) : (
-            <div className="flex gap-2">
-              <Button onClick={handleCancel} variant="outline" size="sm">
-                <X className="w-4 h-4 mr-2" />
-                Cancel
+
+          {/* Pet Name */}
+          <div className="text-center mb-4">
+            <h1 className="text-2xl font-bold text-slate-900">{currentPet?.name}</h1>
+            <p className="text-sm text-slate-500 capitalize">
+              {currentPet?.type} {currentPet?.breed ? `• ${currentPet.breed}` : ""}
+            </p>
+          </div>
+
+          {/* Edit/Save Button */}
+          <div className="flex justify-center mb-4">
+            {!isEditMode ? (
+              <Button onClick={handleEdit} size="sm" variant="outline">
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Profile
               </Button>
-              <Button onClick={handleSave} size="sm" disabled={loading}>
-                <Save className="w-4 h-4 mr-2" />
-                {loading ? "Saving..." : "Save Profile"}
-              </Button>
-            </div>
-          )}
+            ) : (
+              <div className="flex gap-2">
+                <Button onClick={handleCancel} variant="outline" size="sm">
+                  <X className="w-4 h-4 mr-2" />
+                  Cancel
+                </Button>
+                <Button onClick={handleSave} size="sm" disabled={loading}>
+                  <Save className="w-4 h-4 mr-2" />
+                  {loading ? "Saving..." : "Save Profile"}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Navigation Sections */}
-      <div className="bg-white border-b border-slate-200 px-6 py-3 overflow-x-auto">
-        <div className="flex gap-2">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => setActiveSection(section.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                activeSection === section.id
-                  ? "bg-primary text-white"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <span>{section.icon}</span>
-              <span className="text-sm font-medium">{section.title}</span>
-            </button>
-          ))}
+      {/* Section Tabs */}
+      <div className="bg-white border-b border-slate-200 px-6 py-4">
+        <div className="flex justify-between gap-2 max-w-md mx-auto">
+          {sections.map((section) => {
+            const Icon = section.icon;
+            return (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg transition-all ${
+                  activeSection === section.id
+                    ? "bg-primary/10 text-primary border-2 border-primary"
+                    : "bg-slate-50 text-slate-500 border-2 border-transparent hover:bg-slate-100"
+                }`}
+              >
+                <div className={`p-2 rounded-lg ${activeSection === section.id ? section.color : "bg-slate-200"}`}>
+                  <Icon className={`w-5 h-5 ${activeSection === section.id ? "" : "text-slate-600"}`} />
+                </div>
+                <span className="text-xs font-medium">{section.title}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-6">
-        <div className="max-w-2xl mx-auto px-6 py-6 space-y-6">
+      <div className="flex-1 overflow-y-auto pb-6 pt-6">
+        <div className="max-w-2xl mx-auto px-6 space-y-4">
           {activeSection === "basic" && (
             <BasicInfoSection 
-              pet={isEditMode ? editedPet : pet} 
+              pet={currentPet}
               isEditMode={isEditMode} 
               onInputChange={handleInputChange} 
             />
@@ -183,7 +214,7 @@ const ProfilePage = () => {
           
           {activeSection === "activity" && (
             <ActivityLifestyleSection 
-              pet={isEditMode ? editedPet : pet} 
+              pet={currentPet}
               isEditMode={isEditMode} 
               onInputChange={handleInputChange} 
             />
@@ -191,7 +222,7 @@ const ProfilePage = () => {
           
           {activeSection === "health" && (
             <HealthWellnessSection 
-              pet={isEditMode ? editedPet : pet} 
+              pet={currentPet}
               isEditMode={isEditMode} 
               onInputChange={handleInputChange} 
             />
@@ -199,7 +230,7 @@ const ProfilePage = () => {
           
           {activeSection === "care" && (
             <CareTeamSection 
-              pet={isEditMode ? editedPet : pet} 
+              pet={currentPet}
               isEditMode={isEditMode} 
               onInputChange={handleInputChange} 
             />
@@ -225,7 +256,7 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
                 onChange={(e) => onInputChange("name", e.target.value)}
               />
             ) : (
-              <p className="text-slate-700">{pet?.name || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.name || "Not set"}</p>
             )}
           </div>
 
@@ -243,7 +274,7 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
                 </SelectContent>
               </Select>
             ) : (
-              <p className="text-slate-700 capitalize">{pet?.type || "Not set"}</p>
+              <p className="text-slate-700 mt-2 capitalize">{pet?.type || "Not set"}</p>
             )}
           </div>
 
@@ -256,7 +287,7 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., Golden Retriever"
               />
             ) : (
-              <p className="text-slate-700">{pet?.breed || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.breed || "Not set"}</p>
             )}
           </div>
 
@@ -269,7 +300,7 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
                 onChange={(e) => onInputChange("birth_date", e.target.value)}
               />
             ) : (
-              <p className="text-slate-700">
+              <p className="text-slate-700 mt-2">
                 {pet?.birth_date ? new Date(pet.birth_date).toLocaleDateString() : "Not set"}
               </p>
             )}
@@ -289,7 +320,7 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
                 </SelectContent>
               </Select>
             ) : (
-              <p className="text-slate-700 capitalize">{pet?.gender || "Not set"}</p>
+              <p className="text-slate-700 mt-2 capitalize">{pet?.gender || "Not set"}</p>
             )}
           </div>
 
@@ -303,7 +334,7 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., 50"
               />
             ) : (
-              <p className="text-slate-700">{pet?.weight_lbs ? `${pet.weight_lbs} lbs` : "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.weight_lbs ? `${pet.weight_lbs} lbs` : "Not set"}</p>
             )}
           </div>
 
@@ -316,7 +347,7 @@ const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="Describe your pet's personality..."
               />
             ) : (
-              <p className="text-slate-700">{pet?.personality || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.personality || "Not set"}</p>
             )}
           </div>
         </div>
@@ -346,7 +377,7 @@ const ActivityLifestyleSection = ({ pet, isEditMode, onInputChange }: any) => {
                 </SelectContent>
               </Select>
             ) : (
-              <p className="text-slate-700 capitalize">{pet?.activity_level || "Not set"}</p>
+              <p className="text-slate-700 mt-2 capitalize">{pet?.activity_level || "Not set"}</p>
             )}
           </div>
 
@@ -360,7 +391,7 @@ const ActivityLifestyleSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., 2"
               />
             ) : (
-              <p className="text-slate-700">{pet?.walks_per_day || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.walks_per_day || "Not set"}</p>
             )}
           </div>
 
@@ -373,7 +404,7 @@ const ActivityLifestyleSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., Loves running, playing fetch..."
               />
             ) : (
-              <p className="text-slate-700">{pet?.exercise_preferences || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.exercise_preferences || "Not set"}</p>
             )}
           </div>
         </div>
@@ -398,7 +429,7 @@ const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="Vet clinic name"
               />
             ) : (
-              <p className="text-slate-700">{pet?.primary_vet || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.primary_vet || "Not set"}</p>
             )}
           </div>
 
@@ -412,7 +443,7 @@ const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., (555) 123-4567"
               />
             ) : (
-              <p className="text-slate-700">{pet?.vet_phone || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.vet_phone || "Not set"}</p>
             )}
           </div>
 
@@ -425,7 +456,7 @@ const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., 123456789"
               />
             ) : (
-              <p className="text-slate-700">{pet?.microchip_id || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.microchip_id || "Not set"}</p>
             )}
           </div>
 
@@ -438,7 +469,7 @@ const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., Pet Insurance Co."
               />
             ) : (
-              <p className="text-slate-700">{pet?.insurance_provider || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.insurance_provider || "Not set"}</p>
             )}
           </div>
 
@@ -451,7 +482,7 @@ const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="Policy number"
               />
             ) : (
-              <p className="text-slate-700">{pet?.insurance_policy || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.insurance_policy || "Not set"}</p>
             )}
           </div>
 
@@ -465,7 +496,7 @@ const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
                 rows={4}
               />
             ) : (
-              <p className="text-slate-700 whitespace-pre-wrap">{pet?.medical_notes || "Not set"}</p>
+              <p className="text-slate-700 mt-2 whitespace-pre-wrap">{pet?.medical_notes || "Not set"}</p>
             )}
           </div>
         </div>
@@ -490,7 +521,7 @@ const CareTeamSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="Emergency contact name"
               />
             ) : (
-              <p className="text-slate-700">{pet?.emergency_contact || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.emergency_contact || "Not set"}</p>
             )}
           </div>
 
@@ -504,7 +535,7 @@ const CareTeamSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., (555) 123-4567"
               />
             ) : (
-              <p className="text-slate-700">{pet?.emergency_phone || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.emergency_phone || "Not set"}</p>
             )}
           </div>
 
@@ -517,7 +548,7 @@ const CareTeamSection = ({ pet, isEditMode, onInputChange }: any) => {
                 placeholder="e.g., Grain-free, prescription diet..."
               />
             ) : (
-              <p className="text-slate-700">{pet?.diet_requirements || "Not set"}</p>
+              <p className="text-slate-700 mt-2">{pet?.diet_requirements || "Not set"}</p>
             )}
           </div>
 
@@ -531,7 +562,7 @@ const CareTeamSection = ({ pet, isEditMode, onInputChange }: any) => {
                 rows={3}
               />
             ) : (
-              <p className="text-slate-700 whitespace-pre-wrap">{pet?.medication_schedule || "Not set"}</p>
+              <p className="text-slate-700 mt-2 whitespace-pre-wrap">{pet?.medication_schedule || "Not set"}</p>
             )}
           </div>
         </div>
