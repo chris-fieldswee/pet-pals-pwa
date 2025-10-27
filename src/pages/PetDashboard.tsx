@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { MapPin, Compass, Bell, MessageCircle, Home, Activity, Plus, Heart } from "lucide-react";
 import { PetSidebar } from "@/components/PetSidebar";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerDescription } from "@/components/ui/drawer";
 
 /**
  * Pet Dashboard - Individual pet's main view
@@ -17,6 +18,7 @@ const PetDashboard = () => {
   const { toast } = useToast();
   const [pet, setPet] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (!user || !petId) {
@@ -155,12 +157,88 @@ const PetDashboard = () => {
           </button>
           
           {/* Emphasized Plus Button */}
-          <button className="flex flex-col items-center gap-1 relative">
-            <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-lg">
-              <Plus className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-xs font-medium text-slate-600 mt-1">Add</span>
-          </button>
+          <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+            <DrawerTrigger asChild>
+              <button className="flex flex-col items-center gap-1 relative">
+                <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                  <Plus className="w-7 h-7 text-white" />
+                </div>
+                <span className="text-xs font-medium text-slate-600 mt-1">Add</span>
+              </button>
+            </DrawerTrigger>
+            <DrawerContent className="max-h-[80vh]">
+              <DrawerHeader>
+                <DrawerTitle>Add Activity</DrawerTitle>
+                <DrawerDescription>Choose an activity to track with {pet?.name}</DrawerDescription>
+              </DrawerHeader>
+              <div className="p-6 space-y-3">
+                <Button
+                  onClick={() => {
+                    setIsDrawerOpen(false);
+                    navigate(`/pet/${petId}/walk`);
+                  }}
+                  className="w-full h-16 justify-start text-left"
+                  variant="outline"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                      <MapPin className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900">Walk</p>
+                      <p className="text-sm text-slate-600">Track your walking activity</p>
+                    </div>
+                  </div>
+                </Button>
+                
+                <Button
+                  onClick={() => {
+                    setIsDrawerOpen(false);
+                    // TODO: Navigate to feed activity
+                    toast({
+                      title: "Coming soon",
+                      description: "Feed tracking will be available soon",
+                    });
+                  }}
+                  className="w-full h-16 justify-start text-left"
+                  variant="outline"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                      <Heart className="w-6 h-6 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900">Feed</p>
+                      <p className="text-sm text-slate-600">Log meals and snacks</p>
+                    </div>
+                  </div>
+                </Button>
+                
+                <Button
+                  onClick={() => {
+                    setIsDrawerOpen(false);
+                    // TODO: Navigate to play activity
+                    toast({
+                      title: "Coming soon",
+                      description: "Play tracking will be available soon",
+                    });
+                  }}
+                  className="w-full h-16 justify-start text-left"
+                  variant="outline"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
+                      <Activity className="w-6 h-6 text-pink-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900">Play</p>
+                      <p className="text-sm text-slate-600">Record playtime sessions</p>
+                    </div>
+                  </div>
+                </Button>
+              </div>
+            </DrawerContent>
+          </Drawer>
           
           <button className="flex flex-col items-center gap-1 text-slate-400">
             <Activity className="w-6 h-6" />
