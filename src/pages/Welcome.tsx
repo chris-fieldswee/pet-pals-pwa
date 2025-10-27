@@ -39,7 +39,7 @@ const Welcome = () => {
       </div>
 
       {/* CTA Buttons - Thumb-friendly at bottom */}
-      <div className="px-6 pb-8 space-y-3">
+      <div className="px-6 pb-6 space-y-3">
         <Button
           onClick={() => navigate("/onboarding/email")}
           className="w-full h-14 text-base font-semibold rounded-2xl shadow-md"
