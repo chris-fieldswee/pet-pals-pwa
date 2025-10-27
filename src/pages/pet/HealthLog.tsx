@@ -11,7 +11,6 @@ import { ArrowLeft, Plus, Calendar, Pill, HeartPulse, FileText, Syringe } from "
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
 
 /**
  * Health Log Page - Track pet's health records
