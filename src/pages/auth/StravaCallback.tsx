@@ -80,6 +80,14 @@ const StravaCallback = () => {
       // In production, this should be done on your backend to keep client secret secure
       const clientId = import.meta.env.VITE_STRAVA_CLIENT_ID;
       const clientSecret = import.meta.env.VITE_STRAVA_CLIENT_SECRET;
+      const redirectUri = `${window.location.origin}/auth/strava/callback`;
+      
+      console.log("Exchanging token with:", { 
+        clientId: !!clientId, 
+        clientSecret: !!clientSecret, 
+        redirectUri,
+        code 
+      });
       
       // NOTE: For security, this should be done via your backend API
       // This is a simplified example - in production, create a backend endpoint
@@ -97,9 +105,11 @@ const StravaCallback = () => {
       });
 
       const data = await response.json();
+      console.log("Strava response:", { ok: response.ok, status: response.status, data });
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to exchange token");
+        console.error("Strava error details:", data);
+        throw new Error(data.message || data.error || "Failed to exchange token");
       }
 
       // Store the integration in the database
