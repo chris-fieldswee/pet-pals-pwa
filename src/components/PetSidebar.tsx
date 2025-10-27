@@ -88,7 +88,7 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
 
         {/* Sidebar Content */}
         <div className={`
-          absolute left-0 top-0 bottom-0 w-[320px] bg-white shadow-xl
+          absolute left-0 top-0 bottom-0 w-[320px] bg-white shadow-xl z-50
           transition-transform duration-300 transform
           ${open ? "translate-x-0" : "-translate-x-full"}
           flex flex-col
