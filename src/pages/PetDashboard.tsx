@@ -30,6 +30,7 @@ const PetDashboard = () => {
 
     fetchPet();
     fetchActivities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, petId, navigate]);
 
   const fetchActivities = async () => {
@@ -51,12 +52,14 @@ const PetDashboard = () => {
   };
 
   const fetchPet = async () => {
+    if (!user || !petId) return;
+    
     try {
       const { data, error } = await supabase
         .from("pets")
         .select("*")
         .eq("id", petId)
-        .eq("user_id", user?.id)
+        .eq("user_id", user.id)
         .single();
 
       if (error) throw error;
@@ -73,6 +76,7 @@ const PetDashboard = () => {
       setLoading(false);
     }
   };
+
 
   if (loading) {
     return (
