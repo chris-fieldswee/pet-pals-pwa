@@ -20,6 +20,7 @@ import AddPetStep3 from "./pages/onboarding/AddPetStep3";
 import PetSuccess from "./pages/onboarding/PetSuccess";
 import Dashboard from "./pages/Dashboard";
 import PetDashboard from "./pages/PetDashboard";
+import ProfilePage from "./pages/pet/ProfilePage";
 import WalkPage from "./pages/walk/WalkPage";
 import GuidedWalkDetails from "./pages/walk/GuidedWalkDetails";
 import NotFound from "./pages/NotFound";
@@ -51,6 +52,7 @@ const App = () => (
               <Route path="/onboarding/pet-success" element={<PetSuccess />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/pet/:petId" element={<PetDashboard />} />
+              <Route path="/pet/:petId/profile" element={<ProfilePage />} />
               <Route path="/pet/:petId/walk" element={<WalkPage />} />
               <Route path="/pet/:petId/guided-walk/:walkId" element={<GuidedWalkDetails />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
