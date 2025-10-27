@@ -16,11 +16,15 @@ const StravaCallback = () => {
   const error = searchParams.get("error");
 
   useEffect(() => {
+    console.log("StravaCallback mounted", { code, error, user });
     handleCallback();
   }, [code, error]);
 
   const handleCallback = async () => {
+    console.log("handleCallback called", { error, code, user });
+    
     if (error) {
+      console.error("Strava authorization error:", error);
       toast({
         variant: "destructive",
         title: "Authorization Failed",
@@ -30,8 +34,15 @@ const StravaCallback = () => {
       return;
     }
 
-    if (!code || !user) {
+    if (!code) {
+      console.log("No authorization code received");
       navigate("/settings");
+      return;
+    }
+
+    if (!user) {
+      console.log("No user found, redirecting to welcome");
+      navigate("/welcome");
       return;
     }
 
