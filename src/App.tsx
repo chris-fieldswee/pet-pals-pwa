@@ -22,6 +22,7 @@ import Dashboard from "./pages/Dashboard";
 import PetDashboard from "./pages/PetDashboard";
 import ProfilePage from "./pages/pet/ProfilePage";
 import HealthLog from "./pages/pet/HealthLog";
+import Notifications from "./pages/Notifications";
 import ActivitiesFeed from "./pages/ActivitiesFeed";
 import WalkPage from "./pages/walk/WalkPage";
 import GuidedWalkDetails from "./pages/walk/GuidedWalkDetails";
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="/onboarding/pet-success" element={<PetSuccess />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/activities" element={<ActivitiesFeed />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/pet/:petId" element={<PetDashboard />} />
               <Route path="/pet/:petId/profile" element={<ProfilePage />} />
               <Route path="/pet/:petId/health" element={<HealthLog />} />
