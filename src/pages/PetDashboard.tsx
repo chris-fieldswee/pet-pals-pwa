@@ -22,17 +22,6 @@ const PetDashboard = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activities, setActivities] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (!user || !petId) {
-      navigate("/dashboard");
-      return;
-    }
-
-    fetchPet();
-    fetchActivities();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, petId, navigate]);
-
   const fetchActivities = async () => {
     if (!petId) return;
     
@@ -76,6 +65,17 @@ const PetDashboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!user || !petId) {
+      navigate("/dashboard");
+      return;
+    }
+
+    fetchPet();
+    fetchActivities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, petId, navigate]);
 
 
   if (loading) {
