@@ -19,6 +19,7 @@ const PetDashboard = () => {
   const [pet, setPet] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [activities, setActivities] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user || !petId) {
@@ -27,7 +28,26 @@ const PetDashboard = () => {
     }
 
     fetchPet();
+    fetchActivities();
   }, [user, petId, navigate]);
+
+  const fetchActivities = async () => {
+    if (!petId) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("activities")
+        .select("*")
+        .eq("pet_id", petId)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      setActivities(data || []);
+    } catch (error: any) {
+      console.error("Error fetching activities:", error);
+    }
+  };
 
   const fetchPet = async () => {
     try {
@@ -129,8 +149,53 @@ const PetDashboard = () => {
           </p>
         </div>
 
-        {/* Activity Cards Placeholder */}
-        <div className="space-y-4">
+        {/* Recent Activities */}
+        {activities.length > 0 ? (
+          <div className="space-y-3">
+            <h2 className="text-lg font-semibold text-slate-900">Recent Activities</h2>
+            {activities.map((activity) => (
+              <div key={activity.id} className="bg-white rounded-2xl p-4 border border-slate-200">
+                <div className="flex items-start gap-3">
+                  {activity.media_url && activity.media_type === 'image' && (
+                    <img
+                      src={activity.media_url}
+                      alt={activity.title}
+                      className="w-16 h-16 rounded-xl object-cover"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-primary uppercase">
+                        {activity.activity_type}
+                      </span>
+                      {activity.duration_minutes && (
+                        <span className="text-xs text-slate-500">
+                          {activity.duration_minutes} min
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="font-semibold text-slate-900 mb-1">
+                      {activity.title}
+                    </h3>
+                    {activity.description && (
+                      <p className="text-sm text-slate-600 line-clamp-2">
+                        {activity.description}
+                      </p>
+                    )}
+                    {activity.location_name && (
+                      <p className="text-xs text-slate-500 mt-2">
+                        📍 {activity.location_name}
+                      </p>
+                    )}
+                    <p className="text-xs text-slate-400 mt-2">
+                      {new Date(activity.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
           <div className="bg-white rounded-2xl p-6 border-2 border-dashed border-slate-200">
             <div className="text-center">
               <Activity className="w-12 h-12 text-slate-300 mx-auto mb-4" />
@@ -142,7 +207,7 @@ const PetDashboard = () => {
               </p>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Fixed Bottom Navigation */}
@@ -240,7 +305,10 @@ const PetDashboard = () => {
             </DrawerContent>
           </Drawer>
           
-          <button className="flex flex-col items-center gap-1 text-slate-400">
+          <button 
+            onClick={() => navigate("/activities")}
+            className="flex flex-col items-center gap-1 text-slate-400"
+          >
             <Activity className="w-6 h-6" />
             <span className="text-xs font-medium">Activities</span>
           </button>
