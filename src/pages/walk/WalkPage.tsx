@@ -130,9 +130,9 @@ const WalkPage = () => {
  */
 const StandardWalkScreen = ({ onStart, onMusicClick }: { onStart: () => void; onMusicClick: () => void }) => {
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-full relative pb-28">
       {/* Map Placeholder */}
-      <div className="flex-1 bg-slate-200 relative overflow-hidden">
+      <div className="flex-1 bg-slate-200 relative overflow-hidden min-h-[calc(100vh-180px)]">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4">
