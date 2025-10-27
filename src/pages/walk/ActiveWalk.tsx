@@ -83,7 +83,7 @@ const ActiveWalk = () => {
       if (activityError) throw activityError;
 
       // Try to publish to Strava
-      await publishToStrava(user.id, {
+      const stravaResult = await publishToStrava(user.id, {
         name: `${pet.name}'s Walk`,
         type: "walk",
         startDate: startTime,
@@ -92,10 +92,22 @@ const ActiveWalk = () => {
         description: `Walk with ${pet.name} via Livepet`,
       });
 
-      toast({
-        title: "Walk completed!",
-        description: `${mockDistance.toFixed(1)} km in ${formatTime(elapsedTime)}`,
-      });
+      // Show toast with Strava status
+      if (stravaResult?.success) {
+        toast({
+          title: "Walk completed!",
+          description: `${mockDistance.toFixed(1)} km in ${formatTime(elapsedTime)} • Published to Strava`,
+        });
+      } else {
+        toast({
+          title: "Walk completed!",
+          description: `${mockDistance.toFixed(1)} km in ${formatTime(elapsedTime)}`,
+        });
+        
+        if (stravaResult?.reason) {
+          console.log("Strava publish failed:", stravaResult.reason);
+        }
+      }
 
       navigate(`/pet/${petId}`);
     } catch (error: any) {
@@ -234,17 +246,21 @@ const publishToStrava = async (
   }
 ) => {
   try {
+    console.log("Attempting to publish to Strava...", { userId, activityData });
+    
     // Get user's Strava integration
-    const { data: integration } = await supabase
+    const { data: integration, error: fetchError } = await supabase
       .from("user_integrations")
       .select("*")
       .eq("user_id", userId)
       .eq("service", "strava")
       .single();
 
-    if (!integration || !integration.access_token) {
-      console.log("Strava not connected");
-      return;
+    console.log("Strava integration check:", { integration, fetchError });
+
+    if (fetchError || !integration || !integration.access_token) {
+      console.log("Strava not connected or no token available");
+      return { success: false, reason: "not_connected" };
     }
 
     // Check if token is expired (simple check, in production use refresh token)
@@ -252,8 +268,8 @@ const publishToStrava = async (
       integration.token_expires_at &&
       new Date(integration.token_expires_at) < new Date()
     ) {
-      console.log("Strava token expired");
-      return;
+      console.log("Strava token expired at:", integration.token_expires_at);
+      return { success: false, reason: "token_expired" };
     }
 
     // Map activity type to Strava format
@@ -265,6 +281,17 @@ const publishToStrava = async (
     };
     const stravaType = typeMap[activityData.type] || "Workout";
 
+    const payload = {
+      name: activityData.name,
+      type: stravaType,
+      start_date_local: activityData.startDate.toISOString(),
+      elapsed_time: activityData.elapsedTime,
+      distance: activityData.distance * 1000, // convert km to meters
+      description: activityData.description || "",
+    };
+
+    console.log("Publishing to Strava with payload:", payload);
+
     // Publish to Strava
     const response = await fetch("https://www.strava.com/api/v3/activities", {
       method: "POST",
@@ -272,27 +299,21 @@ const publishToStrava = async (
         Authorization: `Bearer ${integration.access_token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        name: activityData.name,
-        type: stravaType,
-        start_date_local: activityData.startDate.toISOString(),
-        elapsed_time: activityData.elapsedTime,
-        distance: activityData.distance * 1000, // convert km to meters
-        description: activityData.description || "",
-      }),
+      body: JSON.stringify(payload),
     });
 
+    const responseData = await response.json();
+
     if (!response.ok) {
-      const error = await response.json();
-      console.error("Failed to publish to Strava:", error);
-      return;
+      console.error("Strava API error:", { status: response.status, data: responseData });
+      return { success: false, reason: "api_error", details: responseData };
     }
 
-    const result = await response.json();
-    console.log("Published to Strava:", result);
+    console.log("Successfully published to Strava:", responseData);
+    return { success: true, data: responseData };
   } catch (error) {
     console.error("Error publishing to Strava:", error);
-    // Silent fail - don't interrupt user
+    return { success: false, reason: "exception", error };
   }
 };
 

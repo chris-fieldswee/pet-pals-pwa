@@ -52,22 +52,24 @@ const UserSettings = () => {
     if (!user) return;
 
     try {
-      const { data: strava } = await supabase
+      const { data: strava, error: stravaError } = await supabase
         .from("user_integrations")
         .select("*")
         .eq("user_id", user.id)
         .eq("service", "strava")
-        .single();
+        .maybeSingle();
 
-      const { data: spotify } = await supabase
+      const { data: spotify, error: spotifyError } = await supabase
         .from("user_integrations")
         .select("*")
         .eq("user_id", user.id)
         .eq("service", "spotify")
-        .single();
+        .maybeSingle();
 
-      setStravaConnected(!!strava && strava.access_token);
-      setSpotifyConnected(!!spotify && spotify.access_token);
+      console.log("Integration check:", { strava, spotify, stravaError, spotifyError });
+
+      setStravaConnected(!!strava && !!strava.access_token);
+      setSpotifyConnected(!!spotify && !!spotify.access_token);
     } catch (error) {
       console.error("Error checking integrations:", error);
     }
