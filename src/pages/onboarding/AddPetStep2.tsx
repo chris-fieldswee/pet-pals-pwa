@@ -37,23 +37,9 @@ const AddPetStep2 = () => {
   }, [petType]);
 
   const loadBreeds = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("breeds")
-        .select("id, name")
-        .eq("type", petType)
-        .order("name");
-
-      if (error) throw error;
-      setBreeds(data || []);
-    } catch (error: any) {
-      console.error("Error loading breeds:", error);
-      toast({
-        variant: "destructive",
-        title: "Failed to load breeds",
-        description: error.message,
-      });
-    }
+    // TODO: Implement breeds table and loading
+    // For now, use empty array
+    setBreeds([]);
   };
 
   const canFinish = day && month && year;

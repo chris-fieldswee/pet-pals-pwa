@@ -33,18 +33,8 @@ const AddPetStep3 = () => {
     setLoading(true);
 
     try {
-      // Update user profile with preferences
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          track_activities: preferences.trackActivities,
-          manage_health: preferences.manageHealth,
-          discover_activities: preferences.discoverActivities,
-          training_guidance: preferences.trainingGuidance,
-        })
-        .eq("id", user.id);
-
-      if (profileError) throw profileError;
+      // TODO: Add preference columns to profiles table
+      // For now, skip profile update and go directly to success
 
       // Navigate to success screen
       navigate("/onboarding/pet-success", { 

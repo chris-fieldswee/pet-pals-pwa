@@ -76,7 +76,7 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
 
       {/* Sidebar Container - Fixed within mobile frame */}
       {open && (
-        <div className="fixed inset-0 z-50 md:!absolute md:!inset-0">
+        <div className="fixed inset-0 z-50 md:absolute md:inset-0">
           {/* Overlay */}
           <div 
             className="absolute inset-0 bg-black/50"
@@ -85,10 +85,11 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
 
           {/* Sidebar Content */}
           <div 
-            className="absolute left-0 top-0 bottom-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col z-50"
+            className="absolute left-0 top-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col z-50"
             style={{
               transform: open ? 'translateX(0)' : 'translateX(-100%)',
-              height: '100%'
+              height: '100vh',
+              maxHeight: '100%'
             }}
           >
             {/* Header */}
