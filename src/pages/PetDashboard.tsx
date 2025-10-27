@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { MapPin, Compass, Bell, MessageCircle, Home, Activity, Plus, Heart, FileText, ShoppingCart } from "lucide-react";
+import { Compass, Bell, MessageCircle, Home, Activity, Plus, Heart, FileText, ShoppingCart } from "lucide-react";
 import { PetSidebar } from "@/components/PetSidebar";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerDescription } from "@/components/ui/drawer";
 import { Card } from "@/components/ui/card";
@@ -123,9 +123,6 @@ const PetDashboard = () => {
 
           {/* Right Icons */}
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <MapPin className="w-5 h-5" />
-            </Button>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Compass className="w-5 h-5" />
             </Button>
