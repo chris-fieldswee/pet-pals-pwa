@@ -14,7 +14,6 @@ import {
   Clock,
   ChevronRight
 } from "lucide-react";
-import { format } from "date-fns";
 
 /**
  * Mock notifications data
@@ -262,7 +261,7 @@ const Notifications = () => {
                               {getPriorityBadge(notification.priority)}
                               <span className="text-xs text-slate-500 flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
-                                {format(new Date(notification.date), "MMM d, yyyy")}
+                                {new Date(notification.date).toLocaleDateString()}
                               </span>
                             </div>
                           </div>
