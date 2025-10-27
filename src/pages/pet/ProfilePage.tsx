@@ -5,22 +5,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ArrowLeft, Edit, Save, X, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * Pet Profile Page - Comprehensive profile management
+ * Pet Profile Page - View and edit pet profile with organized sections
  */
 const ProfilePage = () => {
   const { petId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pet, setPet] = useState<any>(null);
+  const [editedPet, setEditedPet] = useState<any>(null);
+  const [activeSection, setActiveSection] = useState<string>("basic");
 
   useEffect(() => {
     fetchPet();
@@ -39,6 +42,7 @@ const ProfilePage = () => {
 
       if (error) throw error;
       setPet(data);
+      setEditedPet(data);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -48,25 +52,35 @@ const ProfilePage = () => {
     }
   };
 
+  const handleEdit = () => {
+    setIsEditMode(true);
+  };
+
+  const handleCancel = () => {
+    setEditedPet({ ...pet });
+    setIsEditMode(false);
+  };
+
   const handleSave = async () => {
-    if (!user || !petId || !pet) return;
+    if (!user || !petId || !editedPet) return;
 
     setLoading(true);
     try {
       const { error } = await supabase
         .from("pets")
-        .update(pet)
+        .update(editedPet)
         .eq("id", petId)
         .eq("user_id", user.id);
 
       if (error) throw error;
 
+      setPet(editedPet);
+      setIsEditMode(false);
+      
       toast({
         title: "Profile updated!",
         description: "Pet profile has been saved successfully.",
       });
-      
-      navigate(`/pet/${petId}`);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -77,6 +91,20 @@ const ProfilePage = () => {
       setLoading(false);
     }
   };
+
+  const handleInputChange = (field: string, value: any) => {
+    setEditedPet((prev: any) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const sections = [
+    { id: "basic", title: "Basic Information", icon: "📋" },
+    { id: "activity", title: "Activity & Lifestyle", icon: "🏃" },
+    { id: "health", title: "Health & Wellness", icon: "🏥" },
+    { id: "care", title: "Care Team & Support", icon: "👥" },
+  ];
 
   if (!pet) {
     return (
@@ -90,398 +118,426 @@ const ProfilePage = () => {
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-slate-200">
-        <div className="px-6 py-4 flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(`/pet/${petId}`)}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-bold text-slate-900">{pet.name}'s Profile</h1>
+        <div className="px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(`/pet/${petId}`)}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-xl font-bold text-slate-900">Pet Profile</h1>
+          </div>
+          
+          {!isEditMode ? (
+            <Button onClick={handleEdit} size="sm">
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </Button>
+          ) : (
+            <div className="flex gap-2">
+              <Button onClick={handleCancel} variant="outline" size="sm">
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+              <Button onClick={handleSave} size="sm" disabled={loading}>
+                <Save className="w-4 h-4 mr-2" />
+                {loading ? "Saving..." : "Save Profile"}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Navigation Sections */}
+      <div className="bg-white border-b border-slate-200 px-6 py-3 overflow-x-auto">
+        <div className="flex gap-2">
+          {sections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => setActiveSection(section.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                activeSection === section.id
+                  ? "bg-primary text-white"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              }`}
+            >
+              <span>{section.icon}</span>
+              <span className="text-sm font-medium">{section.title}</span>
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-32">
-        <div className="max-w-2xl mx-auto px-6 py-6 space-y-8">
+      <div className="flex-1 overflow-y-auto pb-6">
+        <div className="max-w-2xl mx-auto px-6 py-6 space-y-6">
+          {activeSection === "basic" && (
+            <BasicInfoSection 
+              pet={isEditMode ? editedPet : pet} 
+              isEditMode={isEditMode} 
+              onInputChange={handleInputChange} 
+            />
+          )}
           
-          {/* Basic Information */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-900">Basic Information</h2>
-            
-            <div className="space-y-2">
-              <Label htmlFor="breed">Breed</Label>
-              <Input
-                id="breed"
-                value={pet.breed || ""}
-                onChange={(e) => setPet({ ...pet, breed: e.target.value })}
-                placeholder="e.g., Golden Retriever"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="date_of_birth">Date of Birth</Label>
-              <Input
-                id="date_of_birth"
-                type="date"
-                value={pet.date_of_birth || ""}
-                onChange={(e) => setPet({ ...pet, date_of_birth: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Gender</Label>
-              <Select value={pet.gender || ""} onValueChange={(value) => setPet({ ...pet, gender: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Male">Male</SelectItem>
-                  <SelectItem value="Female">Female</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="color_or_markings">Color or Markings</Label>
-              <Input
-                id="color_or_markings"
-                value={pet.color_or_markings || ""}
-                onChange={(e) => setPet({ ...pet, color_or_markings: e.target.value })}
-                placeholder="e.g., Golden with white chest"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="personality">Personality</Label>
-              <Textarea
-                id="personality"
-                value={pet.personality || ""}
-                onChange={(e) => setPet({ ...pet, personality: e.target.value })}
-                placeholder="e.g., Playful and gentle..."
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="favorite_activities">Favorite Activities</Label>
-              <Input
-                id="favorite_activities"
-                value={pet.favorite_activities || ""}
-                onChange={(e) => setPet({ ...pet, favorite_activities: e.target.value })}
-                placeholder="e.g., Long walks, fetch, swimming"
-              />
-            </div>
-          </section>
-
-          {/* Activity & Lifestyle */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-900">Activity & Lifestyle</h2>
-            
-            <div className="space-y-2">
-              <Label>Activity Level</Label>
-              <Select value={pet.activity_level || ""} onValueChange={(value) => setPet({ ...pet, activity_level: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select activity level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Low">Low</SelectItem>
-                  <SelectItem value="Moderate">Moderate</SelectItem>
-                  <SelectItem value="High">High</SelectItem>
-                  <SelectItem value="Very High">Very High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Walk Frequency</Label>
-              <Select value={pet.walk_frequency || ""} onValueChange={(value) => setPet({ ...pet, walk_frequency: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select walk frequency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Daily">Daily</SelectItem>
-                  <SelectItem value="Several times a week">Several times a week</SelectItem>
-                  <SelectItem value="Weekly">Weekly</SelectItem>
-                  <SelectItem value="Rarely">Rarely</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="diet_type">Diet Type</Label>
-              <Input
-                id="diet_type"
-                value={pet.diet_type || ""}
-                onChange={(e) => setPet({ ...pet, diet_type: e.target.value })}
-                placeholder="e.g., Grain-free kibble..."
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="feeding_schedule">Feeding Schedule</Label>
-              <Input
-                id="feeding_schedule"
-                value={pet.feeding_schedule || ""}
-                onChange={(e) => setPet({ ...pet, feeding_schedule: e.target.value })}
-                placeholder="e.g., 2 meals per day..."
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Socialization</Label>
-              <Select value={pet.socialization || ""} onValueChange={(value) => setPet({ ...pet, socialization: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select socialization level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Well-socialized">Well-socialized</SelectItem>
-                  <SelectItem value="Somewhat social">Somewhat social</SelectItem>
-                  <SelectItem value="Needs improvement">Needs improvement</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Living Environment</Label>
-              <Select value={pet.living_environment || ""} onValueChange={(value) => setPet({ ...pet, living_environment: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select living environment" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="House with yard">House with yard</SelectItem>
-                  <SelectItem value="Apartment">Apartment</SelectItem>
-                  <SelectItem value="Rural area">Rural area</SelectItem>
-                  <SelectItem value="Suburban">Suburban</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </section>
-
-          {/* Health & Wellness */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-900">Health & Wellness</h2>
-            
-            <div className="space-y-2">
-              <Label htmlFor="weight_lbs">Weight (lbs)</Label>
-              <Input
-                id="weight_lbs"
-                type="number"
-                value={pet.weight_lbs || ""}
-                onChange={(e) => setPet({ ...pet, weight_lbs: e.target.value })}
-                placeholder="e.g., 65"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Spayed or Neutered?</Label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    checked={pet.spayed_or_neutered === true}
-                    onChange={() => setPet({ ...pet, spayed_or_neutered: true })}
-                    className="w-4 h-4"
-                  />
-                  <span>Yes</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    checked={pet.spayed_or_neutered === false}
-                    onChange={() => setPet({ ...pet, spayed_or_neutered: false })}
-                    className="w-4 h-4"
-                  />
-                  <span>No</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="microchip_number">Microchip Number (if applicable)</Label>
-              <Input
-                id="microchip_number"
-                value={pet.microchip_number || ""}
-                onChange={(e) => setPet({ ...pet, microchip_number: e.target.value })}
-                placeholder="Enter microchip ID"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="health_concerns">Health Concerns</Label>
-              <Textarea
-                id="health_concerns"
-                value={pet.health_concerns || ""}
-                onChange={(e) => setPet({ ...pet, health_concerns: e.target.value })}
-                placeholder="List any ongoing or chronic conditions"
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="allergies">Allergies</Label>
-              <Input
-                id="allergies"
-                value={pet.allergies || ""}
-                onChange={(e) => setPet({ ...pet, allergies: e.target.value })}
-                placeholder="e.g., Chicken, dust"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="current_medications">Current Medications</Label>
-              <Textarea
-                id="current_medications"
-                value={pet.current_medications || ""}
-                onChange={(e) => setPet({ ...pet, current_medications: e.target.value })}
-                placeholder="Name, dosage, and frequency"
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="vaccinations">Vaccinations (optional)</Label>
-              <Textarea
-                id="vaccinations"
-                value={pet.vaccinations || ""}
-                onChange={(e) => setPet({ ...pet, vaccinations: e.target.value })}
-                placeholder="e.g., Rabies – up to date"
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-3">
-              <Label>Preventive Care</Label>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="flea_tick"
-                    checked={pet.flea_tick_prevention || false}
-                    onCheckedChange={(checked) => setPet({ ...pet, flea_tick_prevention: checked })}
-                  />
-                  <Label htmlFor="flea_tick" className="font-normal cursor-pointer">
-                    Flea/Tick prevention
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="heartworm"
-                    checked={pet.heartworm_prevention || false}
-                    onCheckedChange={(checked) => setPet({ ...pet, heartworm_prevention: checked })}
-                  />
-                  <Label htmlFor="heartworm" className="font-normal cursor-pointer">
-                    Heartworm prevention
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="dental"
-                    checked={pet.dental_care_routine || false}
-                    onCheckedChange={(checked) => setPet({ ...pet, dental_care_routine: checked })}
-                  />
-                  <Label htmlFor="dental" className="font-normal cursor-pointer">
-                    Dental care routine
-                  </Label>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Care Team & Support */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-900">Care Team & Support</h2>
-            
-            <div className="space-y-2">
-              <Label htmlFor="veterinarian_name">Veterinarian Name</Label>
-              <Input
-                id="veterinarian_name"
-                value={pet.veterinarian_name || ""}
-                onChange={(e) => setPet({ ...pet, veterinarian_name: e.target.value })}
-                placeholder="Dr. Smith"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="clinic_name">Clinic Name</Label>
-              <Input
-                id="clinic_name"
-                value={pet.clinic_name || ""}
-                onChange={(e) => setPet({ ...pet, clinic_name: e.target.value })}
-                placeholder="Riverside Animal Hospital"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="vet_phone">Vet Phone</Label>
-              <Input
-                id="vet_phone"
-                type="tel"
-                value={pet.vet_phone || ""}
-                onChange={(e) => setPet({ ...pet, vet_phone: e.target.value })}
-                placeholder="(555) 123-4567"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="vet_address">Vet Address</Label>
-              <Textarea
-                id="vet_address"
-                value={pet.vet_address || ""}
-                onChange={(e) => setPet({ ...pet, vet_address: e.target.value })}
-                placeholder="123 Main Street, Springfield"
-                rows={2}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="emergency_contact_name">Emergency Contact Name</Label>
-              <Input
-                id="emergency_contact_name"
-                value={pet.emergency_contact_name || ""}
-                onChange={(e) => setPet({ ...pet, emergency_contact_name: e.target.value })}
-                placeholder="Sarah Johnson"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="emergency_contact_phone">Emergency Contact Phone</Label>
-              <Input
-                id="emergency_contact_phone"
-                type="tel"
-                value={pet.emergency_contact_phone || ""}
-                onChange={(e) => setPet({ ...pet, emergency_contact_phone: e.target.value })}
-                placeholder="(555) 987-6543"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="pet_insurance">Pet Insurance (optional)</Label>
-              <Input
-                id="pet_insurance"
-                value={pet.pet_insurance || ""}
-                onChange={(e) => setPet({ ...pet, pet_insurance: e.target.value })}
-                placeholder="Provider and policy number"
-              />
-            </div>
-          </section>
+          {activeSection === "activity" && (
+            <ActivityLifestyleSection 
+              pet={isEditMode ? editedPet : pet} 
+              isEditMode={isEditMode} 
+              onInputChange={handleInputChange} 
+            />
+          )}
+          
+          {activeSection === "health" && (
+            <HealthWellnessSection 
+              pet={isEditMode ? editedPet : pet} 
+              isEditMode={isEditMode} 
+              onInputChange={handleInputChange} 
+            />
+          )}
+          
+          {activeSection === "care" && (
+            <CareTeamSection 
+              pet={isEditMode ? editedPet : pet} 
+              isEditMode={isEditMode} 
+              onInputChange={handleInputChange} 
+            />
+          )}
         </div>
-      </div>
-
-      {/* Fixed Save Button */}
-      <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 z-50">
-        <Button
-          onClick={handleSave}
-          disabled={loading}
-          className="w-full h-12 text-base font-semibold"
-          size="lg"
-        >
-          {loading ? "Saving..." : "Save Profile"}
-        </Button>
       </div>
     </div>
   );
 };
 
-export default ProfilePage;
+// Basic Info Section Component
+const BasicInfoSection = ({ pet, isEditMode, onInputChange }: any) => {
+  return (
+    <div className="space-y-4">
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Basic Information</h2>
+        <div className="space-y-4">
+          <div>
+            <Label>Name</Label>
+            {isEditMode ? (
+              <Input
+                value={pet?.name || ""}
+                onChange={(e) => onInputChange("name", e.target.value)}
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.name || "Not set"}</p>
+            )}
+          </div>
 
+          <div>
+            <Label>Type</Label>
+            {isEditMode ? (
+              <Select value={pet?.type || ""} onValueChange={(value) => onInputChange("type", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dog">Dog</SelectItem>
+                  <SelectItem value="cat">Cat</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <p className="text-slate-700 capitalize">{pet?.type || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Breed</Label>
+            {isEditMode ? (
+              <Input
+                value={pet?.breed || ""}
+                onChange={(e) => onInputChange("breed", e.target.value)}
+                placeholder="e.g., Golden Retriever"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.breed || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Birth Date</Label>
+            {isEditMode ? (
+              <Input
+                type="date"
+                value={pet?.birth_date || ""}
+                onChange={(e) => onInputChange("birth_date", e.target.value)}
+              />
+            ) : (
+              <p className="text-slate-700">
+                {pet?.birth_date ? new Date(pet.birth_date).toLocaleDateString() : "Not set"}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Label>Gender</Label>
+            {isEditMode ? (
+              <Select value={pet?.gender || ""} onValueChange={(value) => onInputChange("gender", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <p className="text-slate-700 capitalize">{pet?.gender || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Weight (lbs)</Label>
+            {isEditMode ? (
+              <Input
+                type="number"
+                value={pet?.weight_lbs || ""}
+                onChange={(e) => onInputChange("weight_lbs", e.target.value)}
+                placeholder="e.g., 50"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.weight_lbs ? `${pet.weight_lbs} lbs` : "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Personality Traits</Label>
+            {isEditMode ? (
+              <Textarea
+                value={pet?.personality || ""}
+                onChange={(e) => onInputChange("personality", e.target.value)}
+                placeholder="Describe your pet's personality..."
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.personality || "Not set"}</p>
+            )}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+// Activity & Lifestyle Section Component
+const ActivityLifestyleSection = ({ pet, isEditMode, onInputChange }: any) => {
+  return (
+    <div className="space-y-4">
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Activity & Lifestyle</h2>
+        <div className="space-y-4">
+          <div>
+            <Label>Activity Level</Label>
+            {isEditMode ? (
+              <Select value={pet?.activity_level || ""} onValueChange={(value) => onInputChange("activity_level", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="moderate">Moderate</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <p className="text-slate-700 capitalize">{pet?.activity_level || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Walks per Day</Label>
+            {isEditMode ? (
+              <Input
+                type="number"
+                value={pet?.walks_per_day || ""}
+                onChange={(e) => onInputChange("walks_per_day", e.target.value)}
+                placeholder="e.g., 2"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.walks_per_day || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Exercise Preferences</Label>
+            {isEditMode ? (
+              <Textarea
+                value={pet?.exercise_preferences || ""}
+                onChange={(e) => onInputChange("exercise_preferences", e.target.value)}
+                placeholder="e.g., Loves running, playing fetch..."
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.exercise_preferences || "Not set"}</p>
+            )}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+// Health & Wellness Section Component
+const HealthWellnessSection = ({ pet, isEditMode, onInputChange }: any) => {
+  return (
+    <div className="space-y-4">
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Health & Wellness</h2>
+        <div className="space-y-4">
+          <div>
+            <Label>Primary Veterinarian</Label>
+            {isEditMode ? (
+              <Input
+                value={pet?.primary_vet || ""}
+                onChange={(e) => onInputChange("primary_vet", e.target.value)}
+                placeholder="Vet clinic name"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.primary_vet || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Vet Phone</Label>
+            {isEditMode ? (
+              <Input
+                type="tel"
+                value={pet?.vet_phone || ""}
+                onChange={(e) => onInputChange("vet_phone", e.target.value)}
+                placeholder="e.g., (555) 123-4567"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.vet_phone || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Microchip ID</Label>
+            {isEditMode ? (
+              <Input
+                value={pet?.microchip_id || ""}
+                onChange={(e) => onInputChange("microchip_id", e.target.value)}
+                placeholder="e.g., 123456789"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.microchip_id || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Insurance Provider</Label>
+            {isEditMode ? (
+              <Input
+                value={pet?.insurance_provider || ""}
+                onChange={(e) => onInputChange("insurance_provider", e.target.value)}
+                placeholder="e.g., Pet Insurance Co."
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.insurance_provider || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Insurance Policy Number</Label>
+            {isEditMode ? (
+              <Input
+                value={pet?.insurance_policy || ""}
+                onChange={(e) => onInputChange("insurance_policy", e.target.value)}
+                placeholder="Policy number"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.insurance_policy || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Medical Notes</Label>
+            {isEditMode ? (
+              <Textarea
+                value={pet?.medical_notes || ""}
+                onChange={(e) => onInputChange("medical_notes", e.target.value)}
+                placeholder="Any important medical information..."
+                rows={4}
+              />
+            ) : (
+              <p className="text-slate-700 whitespace-pre-wrap">{pet?.medical_notes || "Not set"}</p>
+            )}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+// Care Team Section Component
+const CareTeamSection = ({ pet, isEditMode, onInputChange }: any) => {
+  return (
+    <div className="space-y-4">
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Care Team & Support</h2>
+        <div className="space-y-4">
+          <div>
+            <Label>Emergency Contact</Label>
+            {isEditMode ? (
+              <Input
+                value={pet?.emergency_contact || ""}
+                onChange={(e) => onInputChange("emergency_contact", e.target.value)}
+                placeholder="Emergency contact name"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.emergency_contact || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Emergency Phone</Label>
+            {isEditMode ? (
+              <Input
+                type="tel"
+                value={pet?.emergency_phone || ""}
+                onChange={(e) => onInputChange("emergency_phone", e.target.value)}
+                placeholder="e.g., (555) 123-4567"
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.emergency_phone || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Special Dietary Requirements</Label>
+            {isEditMode ? (
+              <Textarea
+                value={pet?.diet_requirements || ""}
+                onChange={(e) => onInputChange("diet_requirements", e.target.value)}
+                placeholder="e.g., Grain-free, prescription diet..."
+              />
+            ) : (
+              <p className="text-slate-700">{pet?.diet_requirements || "Not set"}</p>
+            )}
+          </div>
+
+          <div>
+            <Label>Medication Schedule</Label>
+            {isEditMode ? (
+              <Textarea
+                value={pet?.medication_schedule || ""}
+                onChange={(e) => onInputChange("medication_schedule", e.target.value)}
+                placeholder="e.g., Heartworm prevention - monthly"
+                rows={3}
+              />
+            ) : (
+              <p className="text-slate-700 whitespace-pre-wrap">{pet?.medication_schedule || "Not set"}</p>
+            )}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default ProfilePage;
