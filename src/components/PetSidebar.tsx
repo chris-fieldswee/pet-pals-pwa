@@ -73,8 +73,8 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
       <SheetTrigger asChild>
         {children}
       </SheetTrigger>
-      <SheetContent side="left" className="w-[320px] sm:w-[400px] md:!absolute md:!inset-y-0" modal={false}>
-        <div className="flex flex-col h-full">
+      <SheetContent side="left" className="w-[300px] md:!absolute md:!inset-y-0 md:!h-full md:!top-0 md:!bottom-0 bg-white" modal={false}>
+        <div className="flex flex-col h-full bg-white">
           {/* Header */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">Switch Pet</h2>
