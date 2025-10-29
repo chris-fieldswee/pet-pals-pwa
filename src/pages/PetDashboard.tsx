@@ -128,7 +128,7 @@ const PetDashboard = () => {
           {/* Right Icons */}
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="rounded-full">
-              <Compass className="w-5 h-5" />
+              <Compass className="w-6 h-6" />
             </Button>
             <Button 
               variant="ghost" 
@@ -136,11 +136,11 @@ const PetDashboard = () => {
               className="rounded-full relative"
               onClick={() => navigate("/notifications")}
             >
-              <Bell className="w-5 h-5" />
+              <Bell className="w-6 h-6" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </Button>
             <Button variant="ghost" size="icon" className="rounded-full">
-              <MessageCircle className="w-5 h-5" />
+              <MessageCircle className="w-6 h-6" />
             </Button>
           </div>
         </div>
