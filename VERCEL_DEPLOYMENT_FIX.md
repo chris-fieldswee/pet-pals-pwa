@@ -17,11 +17,13 @@ Updated `vercel.json` to:
 
 ## Updated Configuration
 
-The rewrite rule now only matches:
-- Routes without file extensions (e.g., `/dashboard`, `/pet/123`)
-- Special PWA files (`manifest.json`, `sw.js`)
+The rewrite rule now uses the `has` condition to only rewrite requests that:
+- Accept `text/html` content type (browser navigation requests)
 
-Static files (`.css`, `.js`, `.png`, etc.) are automatically served by Vercel without rewriting.
+This means:
+- Static asset requests (CSS, JS, images) are NOT rewritten and served directly
+- Only actual page navigation requests get rewritten to `index.html`
+- This is the recommended Vercel pattern for SPAs
 
 ## Verification
 
