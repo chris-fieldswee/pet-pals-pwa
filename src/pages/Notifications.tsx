@@ -166,6 +166,7 @@ const Notifications = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate(petId ? `/pet/${petId}` : "/dashboard")}
+                className="hover:bg-transparent hover:text-current"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>

@@ -34,3 +34,5 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
   );
 };
 
+
+

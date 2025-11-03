@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
+import ReactDOM from "react-dom";
 
 import { cn } from "@/lib/utils";
 
@@ -18,29 +19,73 @@ const DrawerOverlay = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Overlay ref={ref} className={cn("fixed inset-0 z-50 bg-black/80 md:!absolute", className)} {...props} />
+  <DrawerPrimitive.Overlay 
+    ref={ref} 
+    className={cn("fixed inset-0 z-50 bg-black/80 md:!absolute md:!inset-0", className)} 
+    {...props} 
+  />
 ));
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
-    <DrawerPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background md:!absolute",
-        className,
-      )}
-      {...props}
-    >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-      {children}
-    </DrawerPrimitive.Content>
-  </DrawerPortal>
-));
+>(({ className, children, ...props }, ref) => {
+  const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null);
+  
+  React.useEffect(() => {
+    // Try to find mobile frame container for desktop view
+    const container = document.getElementById('mobile-frame-container');
+    if (container && window.matchMedia('(min-width: 768px)').matches) {
+      setPortalContainer(container);
+    }
+  }, []);
+  
+  const content = (
+    <>
+      <DrawerOverlay 
+        style={portalContainer ? { 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0, 
+          zIndex: 99 
+        } as React.CSSProperties : undefined}
+      />
+      <DrawerPrimitive.Content
+        ref={ref}
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background md:!absolute md:!bottom-0 md:!left-0 md:!right-0 md:!rounded-t-[10px]",
+          className,
+        )}
+        style={portalContainer ? { 
+          zIndex: 100,
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0
+        } as React.CSSProperties : undefined}
+        {...props}
+      >
+        <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+        {children}
+      </DrawerPrimitive.Content>
+    </>
+  );
+  
+  // On desktop, portal to mobile frame container if found
+  if (portalContainer) {
+    return ReactDOM.createPortal(content, portalContainer);
+  }
+  
+  // Otherwise use the default portal
+  return (
+    <DrawerPortal>
+      {content}
+    </DrawerPortal>
+  );
+});
 DrawerContent.displayName = "DrawerContent";
 
 const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (

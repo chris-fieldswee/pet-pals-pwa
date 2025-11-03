@@ -49,3 +49,5 @@ CREATE TRIGGER update_user_integrations_timestamp
 -- Create index for faster lookups
 CREATE INDEX idx_user_integrations_user_service ON user_integrations(user_id, service);
 
+
+

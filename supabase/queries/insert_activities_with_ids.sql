@@ -148,3 +148,5 @@ FROM activities
 WHERE user_id = 'REPLACE_WITH_YOUR_USER_ID'
 ORDER BY created_at DESC;
 
+
+

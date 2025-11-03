@@ -268,3 +268,5 @@ SELECT id, auth.uid() FROM activities LIMIT 1;
 6. Add like and comment features
 7. Implement media upload for activities
 
+
+

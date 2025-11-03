@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Edit, Save, X, Heart, Activity, Pill, Users } from "lucide-react";
+import { ArrowLeft, Edit, Save, X, Heart, Activity, Pill, Users, Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -99,6 +99,55 @@ const ProfilePage = () => {
     }));
   };
 
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !petId) return;
+
+    // File size check (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: "Please choose an image smaller than 5MB.",
+      });
+      return;
+    }
+
+    try {
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${petId}/${Date.now()}.${fileExt}`;
+      const filePath = `pet-photos/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('pet-photos')
+        .upload(filePath, file, {
+          upsert: true // Replace existing file if any
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data } = supabase.storage
+        .from('pet-photos')
+        .getPublicUrl(filePath);
+
+      // Update the edited pet with new photo URL
+      handleInputChange("photo_url", data.publicUrl);
+      
+      toast({
+        title: "Photo uploaded!",
+        description: "Your pet's photo has been updated.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: error.message,
+      });
+    }
+  };
+
   const sections = [
     { id: "basic", title: "Basic", icon: Heart, color: "bg-blue-100 text-blue-600" },
     { id: "activity", title: "Activity", icon: Activity, color: "bg-green-100 text-green-600" },
@@ -125,13 +174,13 @@ const ProfilePage = () => {
             variant="ghost"
             size="icon"
             onClick={() => navigate(`/pet/${petId}`)}
-            className="mb-4"
+            className="mb-4 hover:bg-transparent hover:text-current"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
 
           {/* Pet Image */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-4 relative">
             {currentPet?.photo_url ? (
               <img
                 src={currentPet.photo_url}
@@ -142,6 +191,17 @@ const ProfilePage = () => {
               <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center border-4 border-white shadow-lg">
                 <Heart className="w-16 h-16 text-white fill-white" />
               </div>
+            )}
+            {isEditMode && (
+              <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-primary/90 transition-colors">
+                <Camera className="w-5 h-5 text-white" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </label>
             )}
           </div>
 

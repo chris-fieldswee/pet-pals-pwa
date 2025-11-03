@@ -20,3 +20,5 @@ USING (bucket_id = 'pet-photos');
 -- To see all current policies:
 -- SELECT * FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage';
 
+
+

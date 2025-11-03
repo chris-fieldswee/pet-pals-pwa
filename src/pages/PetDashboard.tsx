@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Compass, Bell, MessageCircle, Home, Activity, Plus, Heart, FileText, ShoppingCart } from "lucide-react";
+import { Calendar, Compass, Bell, MessageCircle, Home, Activity, Plus, Heart, FileText, ShoppingCart } from "lucide-react";
 import { PetSidebar } from "@/components/PetSidebar";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerDescription } from "@/components/ui/drawer";
 import { Card } from "@/components/ui/card";
@@ -26,15 +26,15 @@ const PetDashboard = () => {
     if (!petId) return;
     
     try {
-      const { data, error } = await supabase
+      const result = await (supabase as any)
         .from("activities")
         .select("*")
         .eq("pet_id", petId)
         .order("created_at", { ascending: false })
         .limit(10);
 
-      if (error) throw error;
-      setActivities(data || []);
+      if (result.error) throw result.error;
+      setActivities((result.data as any[]) || []);
     } catch (error: any) {
       console.error("Error fetching activities:", error);
     }
@@ -105,8 +105,8 @@ const PetDashboard = () => {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Fixed Top Navigation */}
-      <div className="sticky top-0 z-50 bg-white border-b border-slate-200">
-        <div className="flex items-center justify-between px-6 py-4">
+      <div className="sticky top-0 z-40 bg-white border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 pb-4 pt-6">
           {/* Pet Profile Picture and Name */}
           <PetSidebar currentPetId={petId}>
             <button className="flex items-center gap-3">
@@ -126,9 +126,12 @@ const PetDashboard = () => {
           </PetSidebar>
 
           {/* Right Icons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="rounded-full">
-              <Compass className="w-6 h-6" />
+              <Calendar className="w-8 h-8" />
+            </Button>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Compass className="w-8 h-8" />
             </Button>
             <Button 
               variant="ghost" 
@@ -136,18 +139,18 @@ const PetDashboard = () => {
               className="rounded-full relative"
               onClick={() => navigate("/notifications")}
             >
-              <Bell className="w-6 h-6" />
+              <Bell className="w-8 h-8" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </Button>
             <Button variant="ghost" size="icon" className="rounded-full">
-              <MessageCircle className="w-6 h-6" />
+              <MessageCircle className="w-8 h-8" />
             </Button>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-6 py-6 overflow-y-auto pb-24 space-y-6">
+      <div className="flex-1 px-6 py-6 overflow-y-auto pb-24 space-y-6" style={{ position: 'relative' } as React.CSSProperties}>
         {/* Profile Completion Message */}
         {!pet.breed && !pet.personality && (
           <Card className="p-4 bg-amber-50 border-amber-200">
@@ -187,7 +190,7 @@ const PetDashboard = () => {
           <Button
             onClick={() => navigate(`/pet/${petId}/health`)}
             variant="outline"
-            className="h-20 flex-col gap-2 bg-white hover:bg-slate-50"
+            className="h-20 flex-col gap-2 bg-white hover:bg-white hover:text-slate-900"
           >
             <Heart className="w-6 h-6 text-primary" />
             <span className="text-sm font-semibold">Health Log</span>
@@ -196,21 +199,16 @@ const PetDashboard = () => {
           <Button
             onClick={() => navigate("/activities")}
             variant="outline"
-            className="h-20 flex-col gap-2 bg-white hover:bg-slate-50"
+            className="h-20 flex-col gap-2 bg-white hover:bg-white hover:text-slate-900"
           >
             <Activity className="w-6 h-6 text-primary" />
             <span className="text-sm font-semibold">Activities</span>
           </Button>
 
           <Button
-            onClick={() => {
-              toast({
-                title: "Coming soon",
-                description: "Medical summary feature coming soon",
-              });
-            }}
+            onClick={() => navigate(`/pet/${petId}/health/overview`)}
             variant="outline"
-            className="h-20 flex-col gap-2 bg-white hover:bg-slate-50"
+            className="h-20 flex-col gap-2 bg-white hover:bg-white hover:text-slate-900"
           >
             <FileText className="w-6 h-6 text-primary" />
             <span className="text-sm font-semibold">Medical Summary</span>
@@ -224,7 +222,7 @@ const PetDashboard = () => {
               });
             }}
             variant="outline"
-            className="h-20 flex-col gap-2 bg-white hover:bg-slate-50"
+            className="h-20 flex-col gap-2 bg-white hover:bg-white hover:text-slate-900"
           >
             <ShoppingCart className="w-6 h-6 text-primary" />
             <span className="text-sm font-semibold">Buy Products</span>
@@ -288,7 +286,7 @@ const PetDashboard = () => {
       </div>
 
       {/* Fixed Bottom Navigation */}
-      <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-3 z-50">
+      <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-3 z-40">
         <div className="flex items-center justify-around max-w-md mx-auto">
           <button
             onClick={() => navigate(`/pet/${petId}`)}
@@ -319,7 +317,7 @@ const PetDashboard = () => {
                     setIsDrawerOpen(false);
                     navigate(`/pet/${petId}/walk`);
                   }}
-                  className="w-full h-16 justify-start text-left"
+                  className="w-full h-16 justify-start text-left hover:bg-slate-100"
                   variant="outline"
                 >
                   <div className="flex items-center gap-4">
@@ -342,7 +340,7 @@ const PetDashboard = () => {
                       description: "Feed tracking will be available soon",
                     });
                   }}
-                  className="w-full h-16 justify-start text-left"
+                  className="w-full h-16 justify-start text-left hover:bg-slate-100"
                   variant="outline"
                 >
                   <div className="flex items-center gap-4">
@@ -365,7 +363,7 @@ const PetDashboard = () => {
                       description: "Play tracking will be available soon",
                     });
                   }}
-                  className="w-full h-16 justify-start text-left"
+                  className="w-full h-16 justify-start text-left hover:bg-slate-100"
                   variant="outline"
                 >
                   <div className="flex items-center gap-4">

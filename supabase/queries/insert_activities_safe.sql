@@ -119,3 +119,5 @@ FROM activities
 WHERE user_id = auth.uid()
 GROUP BY activity_type;
 
+
+

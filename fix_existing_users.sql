@@ -22,3 +22,5 @@ SELECT
 FROM auth.users au
 LEFT JOIN public.profiles p ON au.id = p.id;
 
+
+

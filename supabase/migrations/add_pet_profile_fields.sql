@@ -41,3 +41,5 @@ COMMENT ON COLUMN pets.walk_frequency IS 'How often pet is walked (Daily, Severa
 COMMENT ON COLUMN pets.socialization IS 'Socialization level (Well-socialized, Somewhat social, Needs improvement)';
 COMMENT ON COLUMN pets.living_environment IS 'Where pet lives (House with yard, Apartment, Rural area, etc.)';
 
+
+

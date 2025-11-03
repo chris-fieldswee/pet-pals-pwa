@@ -114,3 +114,5 @@ The UI automatically:
 - Stores photo in Supabase Storage
 - Displays uploaded photo
 
+
+

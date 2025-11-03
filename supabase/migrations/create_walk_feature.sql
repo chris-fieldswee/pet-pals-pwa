@@ -259,3 +259,5 @@ COMMENT ON COLUMN walks.walk_type IS 'standard for self-led walks, guided for au
 COMMENT ON COLUMN walks.route_data IS 'JSONB array of {lat, lng, timestamp, accuracy} points captured during walk';
 COMMENT ON COLUMN walks.status IS 'active=paused/completed=cancelled';
 
+
+

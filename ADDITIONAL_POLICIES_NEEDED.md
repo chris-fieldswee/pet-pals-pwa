@@ -50,3 +50,5 @@ SELECT | Users can read pet photos | View/access photos
 UPDATE | Users can update pet photos | Replace existing photos
 DELETE | Users can delete pet photos | Remove photos
 
+
+

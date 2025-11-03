@@ -22,6 +22,8 @@ import Dashboard from "./pages/Dashboard";
 import PetDashboard from "./pages/PetDashboard";
 import ProfilePage from "./pages/pet/ProfilePage";
 import HealthLog from "./pages/pet/HealthLog";
+import HealthOverview from "./pages/pet/HealthOverview";
+import SharedHealthProfile from "./pages/shared/SharedHealthProfile";
 import Notifications from "./pages/Notifications";
 import UserSettings from "./pages/UserSettings";
 import ActivitiesFeed from "./pages/ActivitiesFeed";
@@ -40,7 +42,12 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
           <MobileFrame>
             <Routes>
               <Route path="/" element={<Navigate to="/splash" replace />} />
@@ -66,6 +73,8 @@ const App = () => (
               <Route path="/pet/:petId" element={<PetDashboard />} />
               <Route path="/pet/:petId/profile" element={<ProfilePage />} />
               <Route path="/pet/:petId/health" element={<HealthLog />} />
+              <Route path="/pet/:petId/health/overview" element={<HealthOverview />} />
+              <Route path="/shared/health/:token" element={<SharedHealthProfile />} />
               <Route path="/pet/:petId/walk" element={<WalkPage />} />
               <Route path="/pet/:petId/walk/active" element={<ActiveWalk />} />
               <Route path="/pet/:petId/guided-walk/:walkId" element={<GuidedWalkDetails />} />

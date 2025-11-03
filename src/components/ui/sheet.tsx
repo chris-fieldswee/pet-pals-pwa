@@ -2,6 +2,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import * as React from "react";
+import ReactDOM from "react-dom";
 
 import { cn } from "@/lib/utils";
 
@@ -24,19 +25,27 @@ const SheetOverlay = React.forwardRef<
     )}
     {...props}
     ref={ref}
+    onPointerDown={(e) => {
+      // Prevent interaction with background content
+      e.preventDefault();
+    }}
+    style={{
+      pointerEvents: 'auto',
+      ...props.style,
+    } as React.CSSProperties}
   />
 ));
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-white p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 md:!absolute",
+  "fixed z-[9999] gap-4 !bg-white p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 md:!absolute md:!z-[100] md:!top-0 md:!left-0",
   {
     variants: {
       side: {
         top: "inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
         bottom:
           "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
-        left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm md:!h-full md:!top-0 md:!bottom-0",
+        left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm md:!absolute md:!top-0 md:!bottom-0 md:!left-0 md:!right-auto md:!h-[844px] md:!w-[300px]",
         right:
           "inset-y-0 right-0 h-full w-3/4  border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
       },
@@ -55,11 +64,63 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
   ({ side = "right", className, children, ...props }, ref) => {
     // Check if modal prop is set to false
     const { modal = true, ...restProps } = props as any;
+    const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null);
+    
+    React.useEffect(() => {
+      // Always check for mobile frame container to render within it
+      const container = document.getElementById('mobile-frame-container');
+      if (container) {
+        setPortalContainer(container);
+      }
+    }, []);
     
     const content = (
       <>
-        {modal && <SheetOverlay />}
-        <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...restProps}>
+        {/* Overlay to prevent background scrolling */}
+        {!modal && (
+          <SheetPrimitive.Overlay
+            className="fixed inset-0 z-[99] bg-black/80 md:!absolute pointer-events-auto"
+            style={{ 
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 99
+            } as React.CSSProperties}
+            onPointerDown={(e) => {
+              // Prevent interaction with background content
+              e.preventDefault();
+            }}
+            onClick={(e) => {
+              // Prevent closing on overlay click when modal is false
+              e.preventDefault();
+            }}
+          />
+        )}
+        {modal && (
+          <SheetPrimitive.Overlay
+            className={cn(
+              "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 md:!absolute",
+            )}
+            onPointerDown={(e) => {
+              // Prevent interaction with background content
+              e.preventDefault();
+            }}
+            style={{
+              pointerEvents: 'auto',
+            } as React.CSSProperties}
+          />
+        )}
+        <SheetPrimitive.Content 
+          ref={ref} 
+          className={cn(sheetVariants({ side }), className)} 
+          style={portalContainer ? { 
+            zIndex: 100,
+            position: 'absolute'
+          } as React.CSSProperties : undefined}
+          {...restProps}
+        >
           {children}
           <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-secondary hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
             <X className="h-4 w-4" />
@@ -69,11 +130,12 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
       </>
     );
     
-    // Don't use portal when modal is false (to keep within mobile frame)
-    if (!modal) {
-      return content;
+    // When we have a portal container (mobile frame), use portal to render within it
+    if (portalContainer) {
+      return ReactDOM.createPortal(content, portalContainer);
     }
     
+    // Otherwise use the default SheetPortal
     return (
       <SheetPortal>
         {content}

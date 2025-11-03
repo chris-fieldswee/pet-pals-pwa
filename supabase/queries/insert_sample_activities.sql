@@ -187,3 +187,5 @@ INSERT INTO activities (
 -- GROUP BY a.id
 -- ORDER BY a.created_at DESC;
 
+
+

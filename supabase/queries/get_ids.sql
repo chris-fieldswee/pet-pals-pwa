@@ -15,3 +15,5 @@ SELECT id, name, type, breed FROM pets WHERE user_id = (SELECT id FROM auth.user
 
 -- After you get these IDs, replace them in the insert queries below
 
+
+

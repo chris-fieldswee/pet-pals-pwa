@@ -256,3 +256,5 @@ WHERE usw.user_id = auth.uid();
 - Consider archiving or compressing old walk data
 - Index `start_time` for efficient date range queries
 
+
+

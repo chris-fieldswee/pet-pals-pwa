@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dog, Cat, ChevronLeft } from "lucide-react";
+import { Dog, Cat, X } from "lucide-react";
 import { StepIndicator } from "@/components/StepIndicator";
 
 /**
@@ -25,9 +25,19 @@ const AddPetStep1 = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-      {/* Sticky Step Indicator */}
+      {/* Sticky Header with Close Button and Step Indicator */}
       <div className="sticky top-0 bg-white border-b border-slate-200 z-50">
         <div className="pt-6 px-6">
+          {/* Close Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-slate-600" />
+            </button>
+          </div>
           <StepIndicator currentStep={1} totalSteps={3} />
         </div>
       </div>
@@ -95,21 +105,13 @@ const AddPetStep1 = () => {
         </div>
       </div>
 
-      {/* Fixed Footer Buttons */}
+      {/* Fixed Footer Button */}
       <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-3 z-50 mt-auto">
-        <div className="flex gap-3 max-w-md mx-auto">
-          <Button
-            onClick={() => navigate("/dashboard")}
-            variant="outline"
-            className="flex-1 h-12 text-base font-semibold rounded-2xl"
-          >
-            <ChevronLeft className="w-5 h-5 mr-1" />
-            Back
-          </Button>
+        <div className="max-w-md mx-auto">
           <Button
             onClick={handleContinue}
             disabled={!canContinue}
-            className="flex-1 h-12 text-base font-semibold rounded-2xl"
+            className="w-full h-12 text-base font-semibold rounded-2xl"
             size="lg"
           >
             Next

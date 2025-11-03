@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import { Camera, ChevronLeft, ChevronRight } from "lucide-react";
+import { Camera, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -30,17 +30,39 @@ const AddPetStep2 = () => {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const loadBreeds = useCallback(async () => {
+    if (!petType) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("breeds")
+        .select("id, name")
+        .eq("type", petType)
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+
+      setBreeds(data || []);
+    } catch (error: any) {
+      console.error("Error loading breeds:", error);
+      toast({
+        variant: "destructive",
+        title: "Failed to load breeds",
+        description: error.message,
+      });
+      setBreeds([]);
+    }
+  }, [petType, toast]);
+
   useEffect(() => {
     if (petType) {
       loadBreeds();
+    } else {
+      // Clear breeds if no pet type is selected
+      setBreeds([]);
+      setBreed("");
     }
-  }, [petType]);
-
-  const loadBreeds = async () => {
-    // TODO: Implement breeds table and loading
-    // For now, use empty array
-    setBreeds([]);
-  };
+  }, [petType, loadBreeds]);
 
   const canFinish = day && month && year;
 
@@ -134,9 +156,19 @@ const AddPetStep2 = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-      {/* Sticky Step Indicator */}
+      {/* Sticky Header with Close Button and Step Indicator */}
       <div className="sticky top-0 bg-white border-b border-slate-200 z-50">
         <div className="pt-6 px-6">
+          {/* Close Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-slate-600" />
+            </button>
+          </div>
           <StepIndicator currentStep={2} totalSteps={3} />
         </div>
       </div>
@@ -275,7 +307,7 @@ const AddPetStep2 = () => {
           <Button
             onClick={() => navigate(-1)}
             variant="outline"
-            className="flex-1 h-12 text-base font-semibold rounded-2xl"
+            className="flex-1 h-12 text-base font-semibold rounded-2xl hover:bg-transparent hover:text-current"
           >
             <ChevronLeft className="w-5 h-5 mr-1" />
             Back

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -62,9 +62,19 @@ const AddPetStep3 = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-      {/* Sticky Step Indicator */}
+      {/* Sticky Header with Close Button and Step Indicator */}
       <div className="sticky top-0 bg-white border-b border-slate-200 z-50">
         <div className="pt-6 px-6">
+          {/* Close Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-slate-600" />
+            </button>
+          </div>
           <StepIndicator currentStep={3} totalSteps={3} />
         </div>
       </div>
@@ -216,7 +226,7 @@ const AddPetStep3 = () => {
           <Button
             onClick={() => navigate(-1)}
             variant="outline"
-            className="flex-1 h-12 text-base font-semibold rounded-2xl"
+            className="flex-1 h-12 text-base font-semibold rounded-2xl hover:bg-transparent hover:text-current"
           >
             <ChevronLeft className="w-5 h-5 mr-1" />
             Back

@@ -328,3 +328,5 @@ COMMENT ON COLUMN activities.activity_type IS 'walk, feed, play, health, photo, 
 COMMENT ON COLUMN activities.is_public IS 'Whether activity is visible to everyone or just followers';
 COMMENT ON COLUMN activities.walk_id IS 'Reference to walks table for walk activities';
 
+
+
