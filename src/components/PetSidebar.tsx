@@ -106,7 +106,7 @@ export const PetSidebar = ({ currentPetId, children }: PetSidebarProps) => {
       </SheetTrigger>
       <SheetContent 
         side="left" 
-        className="w-[300px] md:!w-[300px] md:!h-[844px] !bg-white p-0 overflow-hidden"
+        className="w-full md:!w-full md:!h-[844px] !bg-white p-0 overflow-hidden"
       >
         <div className="flex flex-col h-full min-h-full bg-white overflow-hidden">
           {/* Scrollable Content */}

@@ -17,7 +17,7 @@ const WalkPage = () => {
   const [isMusicDrawerOpen, setIsMusicDrawerOpen] = useState(false);
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 overflow-hidden">
+    <div className="flex flex-col h-full bg-slate-50 overflow-hidden relative">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-slate-200">
         <div className="px-6 py-4">
@@ -137,7 +137,7 @@ const StandardWalkScreen = ({ petId, onMusicClick }: { petId: string; onMusicCli
   return (
     <div className="flex flex-col h-full relative">
       {/* Map Placeholder */}
-      <div className="flex-1 bg-slate-200 relative overflow-hidden min-h-0">
+      <div className="flex-1 bg-slate-200 relative overflow-hidden min-h-0 pb-[112px]">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4">
@@ -157,7 +157,7 @@ const StandardWalkScreen = ({ petId, onMusicClick }: { petId: string; onMusicCli
       </div>
 
       {/* Bottom Controls - Fixed at Bottom */}
-      <div className="bg-white border-t border-slate-200 px-6 py-6 z-50 flex-shrink-0">
+      <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-6 z-50 flex-shrink-0">
         <div className="flex items-center justify-center gap-4 max-w-md mx-auto">
           {/* Settings Button */}
           <button className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">

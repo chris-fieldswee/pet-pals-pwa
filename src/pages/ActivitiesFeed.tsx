@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,8 @@ import {
   Camera,
   Activity as ActivityIcon,
   Utensils,
-  Smile
+  Smile,
+  ArrowLeft
 } from "lucide-react";
 
 /**
@@ -20,6 +22,8 @@ import {
  */
 const ActivitiesFeed = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -123,11 +127,26 @@ const ActivitiesFeed = () => {
     );
   }
 
+  // Navigate back to main screen (dashboard)
+  const handleBack = () => {
+    navigate("/dashboard");
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-slate-200 px-6 py-4">
-        <h1 className="text-xl font-bold text-slate-900">Activities</h1>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBack}
+            className="hover:bg-transparent hover:text-current"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h1 className="text-xl font-bold text-slate-900">Activities</h1>
+        </div>
       </div>
 
       {/* Feed */}

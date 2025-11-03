@@ -99,7 +99,7 @@ SET
   emergency_contact_phone = '(555) 987-6543',
   pet_insurance = 'Healthy Paws - Policy #HP-2024-789456'
 WHERE 
-  id = 'YOUR_PET_ID_HERE'
+  id = 'cbb05754-d641-4d6f-b1b7-86dd50b0359a'
   AND user_id = auth.uid()
 RETURNING id, name, breed;
 */
