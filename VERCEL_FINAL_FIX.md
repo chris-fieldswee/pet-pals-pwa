@@ -8,7 +8,33 @@ Vercel should automatically serve static files, but something in the configurati
 
 ## Solution
 
-### Step 1: Minimal vercel.json (Current)
+### Current Configuration (Trying)
+Using the configuration you specified:
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Note:** This configuration may still have the MIME type issue because the rewrite `/(.*)` catches all requests including assets. However, Vercel should serve static files before applying rewrites. If it doesn't work, see Alternative Config below.
+
+### Alternative: Minimal Config (If Above Fails)
 Using the simplest possible configuration - no rewrites. Vercel should:
 - Automatically serve static files from `dist/`
 - Handle SPA routing automatically for Vite apps
