@@ -3,11 +3,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/assets/(.*)",
-      "destination": "/assets/$1"
-    },
-    {
-      "source": "/(.*)",
+      "source": "/((?!assets|manifest\\.json|sw\\.js|favicon\\.ico|icon-.*\\.png|robots\\.txt|.*\\.[a-z0-9]+$).*)",
       "destination": "/index.html"
     }
   ]
