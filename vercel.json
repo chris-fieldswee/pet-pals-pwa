@@ -4,8 +4,27 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!assets|manifest|sw\\.js|favicon|icon|robots|.*\\.[a-z0-9]+).*)",
+      "source": "/((?!assets|manifest\\.json|sw\\.js|favicon\\.ico|icon-.*\\.png|robots\\.txt|.*\\.[a-z0-9]+$).*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
     }
   ]
 }
