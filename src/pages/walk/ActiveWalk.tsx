@@ -139,7 +139,12 @@ const ActiveWalk = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-40">
+      <div 
+        className="flex-1 overflow-y-auto"
+        style={{
+          paddingBottom: `calc(10rem + env(safe-area-inset-bottom, 0px))`
+        }}
+      >
         <div className="px-6 py-6 space-y-6">
           {/* Map Placeholder */}
           <Card className="h-64 relative overflow-hidden">
@@ -198,7 +203,12 @@ const ActiveWalk = () => {
       </div>
 
       {/* Fixed Bottom Controls */}
-      <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-6 z-50">
+      <div 
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-6 z-50"
+        style={{
+          paddingBottom: `calc(1.5rem + env(safe-area-inset-bottom, 0px))`
+        }}
+      >
         <div className="space-y-3">
           <Button
             onClick={() => setIsPaused(!isPaused)}

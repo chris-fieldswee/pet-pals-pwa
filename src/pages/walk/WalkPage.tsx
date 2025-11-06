@@ -156,8 +156,13 @@ const StandardWalkScreen = ({ petId, onMusicClick }: { petId: string; onMusicCli
         </div>
       </div>
 
-      {/* Bottom Controls - Fixed at Bottom */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-6 z-50 flex-shrink-0">
+      {/* Bottom Controls - Fixed at Bottom with Safe Area Support */}
+      <div 
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-6 z-50 flex-shrink-0"
+        style={{
+          paddingBottom: `calc(1.5rem + env(safe-area-inset-bottom, 0px))`
+        }}
+      >
         <div className="flex items-center justify-center gap-4 max-w-md mx-auto">
           {/* Settings Button */}
           <button className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">

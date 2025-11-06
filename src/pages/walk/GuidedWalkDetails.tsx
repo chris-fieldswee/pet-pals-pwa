@@ -94,7 +94,12 @@ const GuidedWalkDetails = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-6">
+      <div 
+        className="flex-1 overflow-y-auto"
+        style={{
+          paddingBottom: `calc(10rem + env(safe-area-inset-bottom, 0px))`
+        }}
+      >
         <div className="max-w-md mx-auto px-6 space-y-6 py-6">
           {/* Title and Stats */}
           <div className="space-y-2">
@@ -163,7 +168,12 @@ const GuidedWalkDetails = () => {
       </div>
 
       {/* Fixed Bottom Action Buttons */}
-      <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-6 z-50">
+      <div 
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-6 z-50"
+        style={{
+          paddingBottom: `calc(1.5rem + env(safe-area-inset-bottom, 0px))`
+        }}
+      >
         <div className="max-w-md mx-auto space-y-3">
           <Button
             onClick={() => {
