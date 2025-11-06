@@ -136,8 +136,8 @@ const StandardWalkScreen = ({ petId, onMusicClick }: { petId: string; onMusicCli
   };
   return (
     <div className="flex flex-col h-full relative">
-      {/* Map Placeholder */}
-      <div className="flex-1 bg-slate-200 relative overflow-hidden min-h-0 pb-[112px]">
+      {/* Map Placeholder - Full Screen */}
+      <div className="absolute inset-0 bg-slate-200 overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4">
@@ -148,7 +148,7 @@ const StandardWalkScreen = ({ petId, onMusicClick }: { petId: string; onMusicCli
         </div>
 
         {/* Weather Card Example */}
-        <div className="absolute top-4 left-4 right-4">
+        <div className="absolute top-4 left-4 right-4 z-10">
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 max-w-sm">
             <p className="text-sm font-semibold text-amber-900">Hot Pavement Warning</p>
             <p className="text-xs text-amber-700">92°F. Keep paws safe!</p>
